@@ -7,15 +7,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 
 
-
-namespace Infrastructure.Extensions;
-
-public static class ServiceCollectionExtensions
+namespace Infrastructure.Extensions
 {
-    public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static class ServiceCollectionExtensions
     {
+        public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        {
         
 
-    }
+        }
 
+    }
 }
