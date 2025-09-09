@@ -1,0 +1,56 @@
+[
+  {
+    "Name": "Angular Speedster Board 2000",
+    "Description": "Lorem ipsum dolor sit amet...",
+    "Price": 200,
+    "Type": "Boards",
+    "Brand": "Angular",
+    "QuantityInStock": 82,
+    "CategoryId": 1
+  },
+  {
+    "Name": "Green Angular Board 3000",
+    "Description": "Nunc viverra imperdiet enim...",
+    "Price": 150,
+    "Type": "Boards",
+    "Brand": "Angular",
+    "QuantityInStock": 75,
+    "CategoryId": 1
+  },
+  {
+    "Name": "Core Blue Hat",
+    "Description": "Fusce posuere, magna sed pulvinar ultricies...",
+    "Price": 10,
+    "Type": "Hats",
+    "Brand": "NetCore",
+    "QuantityInStock": 32,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Green React Woolen Hat",
+    "Description": "Suspendisse dui purus...",
+    "Price": 8,
+    "Type": "Hats",
+    "Brand": "React",
+    "QuantityInStock": 6,
+    "CategoryId": 2
+  },
+  {
+    "Name": "Blue Code Gloves",
+    "Description": "Nunc viverra imperdiet enim...",
+    "Price": 18,
+    "Type": "Gloves",
+    "Brand": "VS Code",
+    "QuantityInStock": 74,
+    "CategoryId": 3
+  },
+  {
+    "Name": "Redis Red Boots",
+    "Description": "Suspendisse dui purus...",
+    "Price": 250,
+    "Type": "Boots",
+    "Brand": "Redis",
+    "QuantityInStock": 49,
+    "CategoryId": 4
+  }
+]
