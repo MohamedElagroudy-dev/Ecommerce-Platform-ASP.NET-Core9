@@ -1,19 +1,22 @@
 
-using E_commerce.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 using API.Middleware;
+using Application.Extensions;
 using Core.Entities;
 using Core.Extensions;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
-using Application.Extensions;
+using E_commerce.Extensions;
 using Infrastructure.Extensions;
+using Infrastructure.Persistence;
+using Infrastructure.Seeders;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +37,21 @@ namespace API
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+            }
+
+            app.UseMiddleware<ExceptionMiddleware>();
+            try
+            {
+                using var scope = app.Services.CreateScope();
+                var services = scope.ServiceProvider;
+                var context = services.GetRequiredService<ApplicationDbContext>();
+                await context.Database.MigrateAsync();
+                await ApplicationDbContextSeed.SeedAsync(context);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
             }
 
             app.UseHttpsRedirection();
