@@ -17,6 +17,9 @@ namespace Core.Interfaces
         Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] includes);
 
         Task<T> GetByidAsync(int id, params Expression<Func<T, object>>[] includes);
+        Task<T?> GetByAsync(
+            Expression<Func<T, bool>> criteria,
+            params Expression<Func<T, object>>[] includes);
 
         Task<T> GetAsync(int id);
         Task AddAsync(T Entity);

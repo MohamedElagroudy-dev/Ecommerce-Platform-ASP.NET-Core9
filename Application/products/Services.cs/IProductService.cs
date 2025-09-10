@@ -6,8 +6,9 @@ namespace Ecom.Application.Products.Services
     public interface IProductService
     {
         Task<IEnumerable<ProductDTO>> GetAllAsync(ProductParams productParams);
-        Task<bool> AddAsync(AddProductDTO dto);
-        Task<bool> UpdateAsync(UpdateProductDTO dto);
-        Task<bool> DeleteAsync(int id);
+        Task<ProductDTO?> AddAsync(AddProductDTO dto);
+        Task<ProductDTO?> UpdateAsync(UpdateProductDTO dto);
+        Task<ProductDTO?> DeleteAsync(int id);
+        Task<ProductDTO?> GetProductAsync(int id);
     }
 }

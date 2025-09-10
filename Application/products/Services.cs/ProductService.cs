@@ -1,4 +1,5 @@
 ﻿using Core.Entities.Product;
+using Core.Exceptions;
 using Core.Interfaces;
 using Core.Sharing;
 using Ecom.Application.Products.DTOs;
@@ -24,9 +25,10 @@ namespace Ecom.Application.Products.Services
             return products.Select(p => p.ToDto()).ToList();
         }
 
-        public async Task<bool> AddAsync(AddProductDTO dto)
+        public async Task<ProductDTO?> AddAsync(AddProductDTO dto)
         {
-            if (dto == null) return false;
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
 
             var product = dto.ToEntity();
             await _unitOfWork.Products.AddAsync(product);
@@ -47,23 +49,22 @@ namespace Ecom.Application.Products.Services
                 await _unitOfWork.CompleteAsync();
             }
 
-            return true;
+            return product.ToDto();
         }
 
-        public async Task<bool> UpdateAsync(UpdateProductDTO dto)
+        public async Task<ProductDTO?> UpdateAsync(UpdateProductDTO dto)
         {
-            var product = await _unitOfWork.Products.GetByidAsync(dto.Id, p => p.Photos);
-            if (product == null) return false;
+            var product = await _unitOfWork.Products.GetByidAsync(dto.Id, p => p.Photos, p => p.Category);
+            if (product == null)
+                throw new NotFoundException(nameof(Product), dto.Id.ToString());
 
             product.UpdateEntity(dto);
 
-            // Delete old images
             foreach (var photo in product.Photos)
                 _imageService.DeleteImageAsync(photo.ImageName);
 
             product.Photos.Clear();
 
-            // Add new images
             if (dto.Photos != null)
             {
                 var imagePaths = await _imageService.AddImageAsync(dto.Photos, dto.Name);
@@ -76,20 +77,33 @@ namespace Ecom.Application.Products.Services
 
             await _unitOfWork.Products.UpdateAsync(product.Id, product);
             await _unitOfWork.CompleteAsync();
-            return true;
+            return product.ToDto();
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<ProductDTO?> DeleteAsync(int id)
         {
-            var product = await _unitOfWork.Products.GetByidAsync(id, p => p.Photos);
-            if (product == null) return false;
+            var product = await _unitOfWork.Products.GetByidAsync(id, p => p.Photos, p => p.Category);
+            if (product == null)
+                throw new NotFoundException(nameof(Product), id.ToString());
 
             foreach (var photo in product.Photos)
                 _imageService.DeleteImageAsync(photo.ImageName);
 
             await _unitOfWork.Products.DeleteAsync(product.Id);
             await _unitOfWork.CompleteAsync();
-            return true;
+
+            return product.ToDto();
+        }
+
+        public async Task<ProductDTO?> GetProductAsync(int id)
+        {
+            var product = await _unitOfWork.Products
+                .GetByidAsync(id, p => p.Photos, p => p.Category);
+
+            if (product == null)
+                throw new NotFoundException(nameof(Product), id.ToString());
+
+            return product.ToDto();
         }
     }
 }

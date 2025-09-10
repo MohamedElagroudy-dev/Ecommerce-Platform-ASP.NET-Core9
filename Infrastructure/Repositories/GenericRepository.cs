@@ -67,6 +67,23 @@ namespace Infrastructure.Repositories
             //  return await ((DbSet<T>)query).FindAsync();
 
         }
+        public async Task<T?> GetByAsync(
+            Expression<Func<T, bool>> criteria,
+            params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            // Apply includes
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            // Apply where criteria
+            query = query.Where(criteria);
+
+            return await query.FirstOrDefaultAsync();
+        }
 
         public async Task UpdateAsync(int id, T Entity)
         {

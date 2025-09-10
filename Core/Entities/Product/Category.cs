@@ -1,16 +1,13 @@
 ﻿using Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ecom.Core.Entities.Product
 {
     public class Category : BaseEntity
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        // public ICollection<Product> products { get; set; } = new HashSet<Product>();
+        public required string Name { get; set; }
+        public required string Description { get; set; }
+
+        // Initialize collection to avoid null warnings
+        //public virtual ICollection<Product> Products { get; set; } = new HashSet<Product>();
     }
 }
