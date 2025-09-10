@@ -13,9 +13,8 @@ namespace Ecom.Application.Products.Mappings
                 Id = product.Id,
                 Name = product.Name,
                 Description = product.Description,
-                NewPrice = product.Price,
-                Price = product.Price, // لو حابب تخليها ثابتة
-                Rating = product.rating,
+                Price = product.Price,
+                Rating = product.Rating,
                 CategoryName = product.Category?.Name ?? string.Empty,
                 Photos = product.Photos?.Select(p => p.ToDto()).ToList() ?? new()
             };

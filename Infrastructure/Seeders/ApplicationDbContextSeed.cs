@@ -27,7 +27,7 @@ namespace Infrastructure.Seeders
             // Seed Products
             if (!context.Products.Any())
             {
-                var productsData = await File.ReadAllTextAsync("../Infrastructure/Data/SeedData/products.json");
+                var productsData = await File.ReadAllTextAsync("../Infrastructure/Seeders/SeedData/products.json");
                 var products = JsonSerializer.Deserialize<List<Product>>(productsData);
 
                 if (products != null && products.Count > 0)
@@ -40,7 +40,7 @@ namespace Infrastructure.Seeders
             // Seed DeliveryMethods
             if (!context.DeliveryMethods.Any())
             {
-                var dmData = await File.ReadAllTextAsync("../Infrastructure/Data/SeedData/delivery.json");
+                var dmData = await File.ReadAllTextAsync("../Infrastructure/Seeders/SeedData/delivery.json");
                 var methods = JsonSerializer.Deserialize<List<DeliveryMethod>>(dmData);
 
                 if (methods != null && methods.Count > 0)
@@ -52,7 +52,7 @@ namespace Infrastructure.Seeders
 
             if (!context.Categories.Any())
             {
-                var catData = await File.ReadAllTextAsync("../Infrastructure/Data/SeedData/categories.json");
+                var catData = await File.ReadAllTextAsync("../Infrastructure/Seeders/SeedData/categories.json");
                 var categories = JsonSerializer.Deserialize<List<Category>>(catData);
 
                 if (categories != null && categories.Count > 0)

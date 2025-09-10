@@ -10,7 +10,7 @@ namespace Core.Interfaces
 {
     public interface IProductRepository : IGenericRepository<Product>
     {
-        Task<IEnumerable<Product>> GetAllAsync(ProductParams productParams);
+        Task<(IEnumerable<Product> Products, int TotalCount)> GetAllAsync(ProductParams productParams);
        
     }
 }

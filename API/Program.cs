@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using Scalar.AspNetCore;
 
 namespace API
 {
@@ -37,7 +38,10 @@ namespace API
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.MapScalarApiReference();
             }
+            app.UseStaticFiles(); // Serves wwwroot
+
 
             app.UseMiddleware<ExceptionMiddleware>();
             try

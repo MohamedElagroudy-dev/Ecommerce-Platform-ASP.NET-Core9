@@ -1,4 +1,5 @@
-﻿using Core.Entities.Product;
+﻿using Application.Common;
+using Core.Entities.Product;
 using Core.Exceptions;
 using Core.Interfaces;
 using Core.Sharing;
@@ -19,10 +20,14 @@ namespace Ecom.Application.Products.Services
             _imageService = imageService;
         }
 
-        public async Task<IEnumerable<ProductDTO>> GetAllAsync(ProductParams productParams)
+        public async Task<PagedResult<ProductDTO>> GetAllAsync(ProductParams productParams)
         {
-            var products = await _unitOfWork.Products.GetAllAsync(productParams);
-            return products.Select(p => p.ToDto()).ToList();
+            var (products,totalCount) = await _unitOfWork.Products.GetAllAsync(productParams);
+
+            var productsDto = products.Select(p => p.ToDto()).ToList();
+
+            var result = new PagedResult<ProductDTO>(productsDto, totalCount, productParams.pageSize, productParams.PageNumber);
+            return result;
         }
 
         public async Task<ProductDTO?> AddAsync(AddProductDTO dto)
@@ -52,33 +57,53 @@ namespace Ecom.Application.Products.Services
             return product.ToDto();
         }
 
-        public async Task<ProductDTO?> UpdateAsync(UpdateProductDTO dto)
+        public async Task<bool> UpdateAsync(UpdateProductDTO updateProductDTO)
         {
-            var product = await _unitOfWork.Products.GetByidAsync(dto.Id, p => p.Photos, p => p.Category);
-            if (product == null)
-                throw new NotFoundException(nameof(Product), dto.Id.ToString());
+            if (updateProductDTO is null)
+                return false;
 
-            product.UpdateEntity(dto);
+            var findProduct = await _unitOfWork.Products.GetByidAsync(
+                updateProductDTO.Id,
+                p => p.Photos,
+                p => p.Category);
 
-            foreach (var photo in product.Photos)
-                _imageService.DeleteImageAsync(photo.ImageName);
+            if (findProduct is null)
+                return false;
 
-            product.Photos.Clear();
+            // Update product properties using your existing mapping extension
+            findProduct.UpdateEntity(updateProductDTO);
 
-            if (dto.Photos != null)
+            // Get existing photos for this product
+            var existingPhotos = findProduct.Photos?.ToList() ?? new List<Photo>();
+
+            // Delete existing images from storage and database
+            foreach (var photo in existingPhotos)
             {
-                var imagePaths = await _imageService.AddImageAsync(dto.Photos, dto.Name);
-                product.Photos = imagePaths.Select(path => new Photo
-                {
-                    ImageName = path,
-                    ProductId = product.Id
-                }).ToList();
+                _imageService.DeleteImageAsync(photo.ImageName);
+                await _unitOfWork.Photos.DeleteAsync(photo.Id);
             }
 
-            await _unitOfWork.Products.UpdateAsync(product.Id, product);
+            // Add new photos if provided
+            if (updateProductDTO.Photos != null && updateProductDTO.Photos.Any())
+            {
+                var imagePaths = await _imageService.AddImageAsync(updateProductDTO.Photos, updateProductDTO.Name);
+                var newPhotos = imagePaths.Select(path => new Photo
+                {
+                    ImageName = path,
+                    ProductId = updateProductDTO.Id
+                }).ToList();
+
+                foreach (var photo in newPhotos)
+                    await _unitOfWork.Photos.AddAsync(photo);
+            }
+
+            // Update the product using your repository pattern
+            await _unitOfWork.Products.UpdateAsync(updateProductDTO.Id, findProduct);
             await _unitOfWork.CompleteAsync();
-            return product.ToDto();
+
+            return true;
         }
+
 
         public async Task<ProductDTO?> DeleteAsync(int id)
         {
@@ -86,8 +111,11 @@ namespace Ecom.Application.Products.Services
             if (product == null)
                 throw new NotFoundException(nameof(Product), id.ToString());
 
-            foreach (var photo in product.Photos)
+            foreach (var photo in product.Photos ?? Enumerable.Empty<Photo>())
+            {
                 _imageService.DeleteImageAsync(photo.ImageName);
+            }
+
 
             await _unitOfWork.Products.DeleteAsync(product.Id);
             await _unitOfWork.CompleteAsync();
