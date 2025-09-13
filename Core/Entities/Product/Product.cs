@@ -10,9 +10,6 @@ namespace Core.Entities.Product
 
         public decimal Price { get; set; }
 
-        public string? Type { get; set; }
-        public string? Brand { get; set; }
-
         public int QuantityInStock { get; set; }
 
         public virtual List<Photo> Photos { get; set; } = new();
@@ -22,6 +19,5 @@ namespace Core.Entities.Product
         [ForeignKey(nameof(CategoryId))]
         public virtual Category Category { get; set; } = null!;
 
-        public double Rating { get; set; }
     }
 }

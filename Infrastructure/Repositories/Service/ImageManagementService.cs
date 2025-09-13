@@ -22,33 +22,38 @@ namespace Infrastructure.Repositories.Service
         {
             List<string> SaveImageSrc = new List<string>();
 
-            var ImageDirctory = Path.Combine("wwwroot", "Images", src);
+            var imageDirectory = Path.Combine("wwwroot", "Images", src);
 
-            if (!Directory.Exists(ImageDirctory))
+            if (!Directory.Exists(imageDirectory))
             {
-                Directory.CreateDirectory(ImageDirctory);
+                Directory.CreateDirectory(imageDirectory);
             }
 
             foreach (var item in files)
             {
                 if (item.Length > 0)
                 {
-                    var ImageName = item.FileName;
+                    var imageName = item.FileName;
 
-                    var root = Path.Combine(ImageDirctory, ImageName);
+                    var shortGuid = Guid.NewGuid().ToString("N").Substring(0, 8);
+
+                    var uniqueImageName = $"{Path.GetFileNameWithoutExtension(imageName)}_{shortGuid}{Path.GetExtension(imageName)}";
+
+                    var root = Path.Combine(imageDirectory, uniqueImageName);
 
                     using (FileStream stream = new FileStream(root, FileMode.Create))
                     {
                         await item.CopyToAsync(stream);
                     }
 
-                    // Add full URL for frontend
-                    var ImageSrc = $"/Images/{src}/{Uri.EscapeDataString(ImageName)}";
-                    SaveImageSrc.Add(ImageSrc);
+                    var imageSrc = $"/Images/{src}/{Uri.EscapeDataString(uniqueImageName)}";
+                    SaveImageSrc.Add(imageSrc);
                 }
             }
             return SaveImageSrc;
         }
+
+
 
 
 

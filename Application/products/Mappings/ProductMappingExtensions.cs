@@ -14,13 +14,13 @@ namespace Ecom.Application.Products.Mappings
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                Rating = product.Rating,
+                QuantityInStock = product.QuantityInStock,
                 CategoryName = product.Category?.Name ?? string.Empty,
                 Photos = product.Photos?.Select(p => p.ToDto()).ToList() ?? new()
             };
         }
 
-        public static PhotoDTO ToDto(this Photo? photo)
+        public static PhotoDTO ToDto(this Photo photo)
         {
             return new PhotoDTO
             {
@@ -29,19 +29,20 @@ namespace Ecom.Application.Products.Mappings
             };
         }
 
-        public static Product ToEntity(this AddProductDTO? dto)
+        public static Product ToEntity(this AddProductDTO dto)
         {
             return new Product
             {
                 Name = dto.Name,
                 Description = dto.Description,
                 Price = dto.Price,
+                QuantityInStock = dto.QuantityInStock,
                 CategoryId = dto.CategoryId,
                 Photos = new List<Photo>()
             };
         }
 
-        public static void UpdateEntity(this Product? product, UpdateProductDTO dto)
+        public static void UpdateEntity(this Product product, UpdateProductDTO dto)
         {
             product.Name = dto.Name;
             product.Description = dto.Description;
