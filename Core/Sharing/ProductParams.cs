@@ -8,8 +8,7 @@ namespace Core.Sharing
 {
     public class ProductParams
     {
-        //string sort, int? CategoryId, int pageSize, int PageNumber
-        public string? Sort { get; set; }
+        public ProductSort? Sort { get; set; } = ProductSort.Id;
         public int? CategoryId { get; set; }
 
         public int? TotatlCount { get; set; }

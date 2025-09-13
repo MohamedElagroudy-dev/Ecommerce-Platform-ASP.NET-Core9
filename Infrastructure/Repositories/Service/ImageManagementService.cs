@@ -13,11 +13,9 @@ namespace Infrastructure.Repositories.Service
     public class ImageManagementService : IImageManagementService
     {
         private readonly IFileProvider fileProvider;
-        private readonly IConfiguration _configuration;
-        public ImageManagementService(IFileProvider fileProvider,IConfiguration configuration)
+        public ImageManagementService(IFileProvider fileProvider)
         {
             this.fileProvider = fileProvider;
-            _configuration = configuration;
         }
 
         public async Task<List<string>> AddImageAsync(IFormFileCollection files, string src)
@@ -30,9 +28,6 @@ namespace Infrastructure.Repositories.Service
             {
                 Directory.CreateDirectory(ImageDirctory);
             }
-
-            // Get base URL from appsettings
-            string baseUrl = _configuration["ApiSettings:BaseUrl"];
 
             foreach (var item in files)
             {
@@ -48,7 +43,7 @@ namespace Infrastructure.Repositories.Service
                     }
 
                     // Add full URL for frontend
-                    var ImageSrc = $"{baseUrl}/Images/{src}/{Uri.EscapeDataString(ImageName)}";
+                    var ImageSrc = $"/Images/{src}/{Uri.EscapeDataString(ImageName)}";
                     SaveImageSrc.Add(ImageSrc);
                 }
             }

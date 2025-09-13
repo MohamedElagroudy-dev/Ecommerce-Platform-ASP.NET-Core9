@@ -40,20 +40,15 @@ namespace Infrastructure.Repositories
             // Get total count before pagination
             int totalCount = await query.CountAsync();
 
-            // Sorting
-            if (!string.IsNullOrEmpty(productParams.Sort))
+            query = productParams.Sort switch
             {
-                query = productParams.Sort switch
-                {
-                    "PriceAsc" => query.OrderBy(p => p.Price),
-                    "PriceDesc" => query.OrderByDescending(p => p.Price),
-                    _ => query.OrderBy(p => p.Name),
-                };
-            }
-            else
-            {
-                query = query.OrderBy(p => p.Name); // default sort
-            }
+                ProductSort.PriceAsc => query.OrderBy(p => p.Price),
+                ProductSort.PriceDesc => query.OrderByDescending(p => p.Price),
+                ProductSort.NameAsc => query.OrderBy(p => p.Name),
+                ProductSort.NameDesc => query.OrderByDescending(p => p.Name),
+                _ => query.OrderBy(p => p.Id) // default Id
+            };
+
 
             // Pagination
             query = query

@@ -54,6 +54,7 @@ namespace Ecom.Application.Products.Services
                 await _unitOfWork.CompleteAsync();
             }
 
+     
             return product.ToDto();
         }
 
