@@ -371,3 +371,5 @@ secrets.json
 
 # Ignore uploaded images
 wwwroot/Images/
+API/wwwroot/Images/
+
