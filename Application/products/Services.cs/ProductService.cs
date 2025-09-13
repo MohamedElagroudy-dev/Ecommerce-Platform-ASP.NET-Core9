@@ -6,6 +6,7 @@ using Core.Sharing;
 using Ecom.Application.Products.DTOs;
 using Ecom.Application.Products.Mappings;
 using Ecom.Core.Entities.Product;
+using Microsoft.Extensions.Logging;
 
 namespace Ecom.Application.Products.Services
 {
@@ -13,25 +14,29 @@ namespace Ecom.Application.Products.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IImageManagementService _imageService;
+        private readonly ILogger<ProductService> _logger;
 
-        public ProductService(IUnitOfWork unitOfWork, IImageManagementService imageService)
+        public ProductService(IUnitOfWork unitOfWork, IImageManagementService imageService, ILogger<ProductService> logger)
         {
             _unitOfWork = unitOfWork;
             _imageService = imageService;
+            _logger = logger;
         }
 
         public async Task<PagedResult<ProductDTO>> GetAllAsync(ProductParams productParams)
         {
-            var (products,totalCount) = await _unitOfWork.Products.GetAllAsync(productParams);
+            _logger.LogInformation("Executing GetAllAsync with page {PageNumber}, size {PageSize}", productParams.PageNumber, productParams.pageSize);
 
+            var (products, totalCount) = await _unitOfWork.Products.GetAllAsync(productParams);
             var productsDto = products.Select(p => p.ToDto()).ToList();
 
-            var result = new PagedResult<ProductDTO>(productsDto, totalCount, productParams.pageSize, productParams.PageNumber);
-            return result;
+            return new PagedResult<ProductDTO>(productsDto, totalCount, productParams.pageSize, productParams.PageNumber);
         }
 
         public async Task<ProductDTO?> AddAsync(AddProductDTO dto)
         {
+            _logger.LogInformation("Executing AddAsync for product {ProductName}", dto?.Name);
+
             if (dto == null)
                 throw new ArgumentNullException(nameof(dto));
 
@@ -54,12 +59,13 @@ namespace Ecom.Application.Products.Services
                 await _unitOfWork.CompleteAsync();
             }
 
-     
             return product.ToDto();
         }
 
         public async Task<bool> UpdateAsync(UpdateProductDTO updateProductDTO)
         {
+            _logger.LogInformation("Executing UpdateAsync for product Id={Id}", updateProductDTO?.Id);
+
             if (updateProductDTO is null)
                 return false;
 
@@ -71,20 +77,16 @@ namespace Ecom.Application.Products.Services
             if (findProduct is null)
                 return false;
 
-            // Update product properties using your existing mapping extension
             findProduct.UpdateEntity(updateProductDTO);
 
-            // Get existing photos for this product
             var existingPhotos = findProduct.Photos?.ToList() ?? new List<Photo>();
 
-            // Delete existing images from storage and database
             foreach (var photo in existingPhotos)
             {
                 _imageService.DeleteImageAsync(photo.ImageName);
                 await _unitOfWork.Photos.DeleteAsync(photo.Id);
             }
 
-            // Add new photos if provided
             if (updateProductDTO.Photos != null && updateProductDTO.Photos.Any())
             {
                 var imagePaths = await _imageService.AddImageAsync(updateProductDTO.Photos, updateProductDTO.Name);
@@ -98,16 +100,16 @@ namespace Ecom.Application.Products.Services
                     await _unitOfWork.Photos.AddAsync(photo);
             }
 
-            // Update the product using your repository pattern
             await _unitOfWork.Products.UpdateAsync(updateProductDTO.Id, findProduct);
             await _unitOfWork.CompleteAsync();
 
             return true;
         }
 
-
         public async Task<ProductDTO?> DeleteAsync(int id)
         {
+            _logger.LogInformation("Executing DeleteAsync for product Id={Id}", id);
+
             var product = await _unitOfWork.Products.GetByidAsync(id, p => p.Photos, p => p.Category);
             if (product == null)
                 throw new NotFoundException(nameof(Product), id.ToString());
@@ -117,7 +119,6 @@ namespace Ecom.Application.Products.Services
                 _imageService.DeleteImageAsync(photo.ImageName);
             }
 
-
             await _unitOfWork.Products.DeleteAsync(product.Id);
             await _unitOfWork.CompleteAsync();
 
@@ -126,9 +127,9 @@ namespace Ecom.Application.Products.Services
 
         public async Task<ProductDTO?> GetProductAsync(int id)
         {
-            var product = await _unitOfWork.Products
-                .GetByidAsync(id, p => p.Photos, p => p.Category);
+            _logger.LogInformation("Executing GetProductAsync for product Id={Id}", id);
 
+            var product = await _unitOfWork.Products.GetByidAsync(id, p => p.Photos, p => p.Category);
             if (product == null)
                 throw new NotFoundException(nameof(Product), id.ToString());
 
