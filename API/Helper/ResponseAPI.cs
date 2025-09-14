@@ -1,4 +1,4 @@
-﻿namespace API.Responses
+﻿namespace API.Helper
 {
     public class ResponseAPI
     {
