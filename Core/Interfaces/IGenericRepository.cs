@@ -23,6 +23,7 @@ namespace Core.Interfaces
 
         Task<T> GetAsync(int id);
         Task AddAsync(T Entity);
+        Task AddRangeAsync(IEnumerable<T> entities);
         Task DeleteAsync(int id);
 
         Task UpdateAsync(int id, T Entity);

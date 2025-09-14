@@ -1,6 +1,7 @@
 
 
 
+using Application.Categories.Services;
 using Core.Interfaces;
 using Ecom.Application.Products.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,9 +17,8 @@ namespace Application.Extensions
             var applicationAssembly = typeof(ServiceCollectionExtensions).Assembly;
 
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ICategoryService, CategoryService>();
 
-            //services.AddSingleton<IFileProvider>(
-            //new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
         }
 
 

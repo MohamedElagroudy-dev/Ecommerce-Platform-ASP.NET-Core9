@@ -10,15 +10,18 @@ namespace Infrastructure.Repositories
         private readonly ApplicationDbContext _context;
         public IProductRepository Products { get; }
         public IGenericRepository<Photo> Photos { get; }
+        public IGenericRepository<Category> Categories { get; }
 
 
         public UnitOfWork(ApplicationDbContext context,
                           IProductRepository productRepository,
-                          IGenericRepository<Photo> photoRepository)
+                          IGenericRepository<Photo> photoRepository,
+                          IGenericRepository<Category> categoryRepository)
         {
             _context = context;
             Products = productRepository;
             Photos = photoRepository;
+            Categories = categoryRepository;
         }
 
         public async Task<int> CompleteAsync()

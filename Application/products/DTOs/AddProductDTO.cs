@@ -15,6 +15,6 @@ namespace Ecom.Application.Products.DTOs
 
         public int QuantityInStock { get; set; }
         public int CategoryId { get; init; }
-        public IFormFileCollection Photos { get; init; }
+        public required IFormFileCollection Photos { get; init; }
     }
 }
