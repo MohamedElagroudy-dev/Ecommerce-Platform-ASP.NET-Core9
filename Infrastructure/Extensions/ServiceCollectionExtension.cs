@@ -1,6 +1,8 @@
 
 
 
+using Core.Entities;
+using Core.Identity;
 using Core.Interfaces;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
@@ -33,9 +35,20 @@ namespace Infrastructure.Extensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddSingleton<IFileProvider>(
-            new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"))
-);
+            new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
 
+            services.Configure<JWT>(configuration.GetSection("JWT"));
+            services.AddIdentity<AppUser, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 6;
+
+                options.User.RequireUniqueEmail = true;
+            })
+            .AddEntityFrameworkStores<ApplicationDbContext>();
         }
 
     }

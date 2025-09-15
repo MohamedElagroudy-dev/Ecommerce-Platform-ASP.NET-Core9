@@ -3,6 +3,7 @@ using Core.Entities.OrderAggregate;
 using Core.Entities.Product;
 using Ecom.Core.Entities.Product;
 using Infrastructure.Config;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 namespace Infrastructure.Persistence
 {
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<AppUser>(options)
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<Address> Addresses { get; set; }
