@@ -11,7 +11,9 @@ namespace Core.Interfaces
     {
         IProductRepository Products { get; }
         IGenericRepository<Photo> Photos { get; }
-        public IGenericRepository<Category> Categories { get; }
+        IGenericRepository<Category> Categories { get; }
+        IImageManagementService Images { get; }
+        ICartService Cart { get; }
         Task<int> CompleteAsync();
     }
 }

@@ -26,6 +26,7 @@ namespace Infrastructure.Extensions
 
             services.AddScoped<IImageManagementService, ImageManagementService>();
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddSingleton<ICartService, CartService>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             //services.AddSingleton<ICartService, CartService>();
             //services.AddScoped<IPaymentService, PaymentService>();

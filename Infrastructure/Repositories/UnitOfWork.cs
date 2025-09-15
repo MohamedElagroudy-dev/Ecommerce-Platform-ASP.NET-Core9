@@ -11,17 +11,23 @@ namespace Infrastructure.Repositories
         public IProductRepository Products { get; }
         public IGenericRepository<Photo> Photos { get; }
         public IGenericRepository<Category> Categories { get; }
+        public IImageManagementService Images { get; }
+        public ICartService Cart { get; }
 
 
         public UnitOfWork(ApplicationDbContext context,
                           IProductRepository productRepository,
                           IGenericRepository<Photo> photoRepository,
-                          IGenericRepository<Category> categoryRepository)
+                          IGenericRepository<Category> categoryRepository,
+                          IImageManagementService _ImageService,
+                                ICartService _CartService)
         {
             _context = context;
             Products = productRepository;
             Photos = photoRepository;
             Categories = categoryRepository;
+            Images = _ImageService;
+            Cart = _CartService;
         }
 
         public async Task<int> CompleteAsync()

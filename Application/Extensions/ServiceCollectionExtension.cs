@@ -1,6 +1,7 @@
 
 
 
+using Application.Cart.Services;
 using Application.Categories.Services;
 using Core.Interfaces;
 using Ecom.Application.Products.Services;
@@ -18,6 +19,9 @@ namespace Application.Extensions
 
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ICartAppService, CartAppService>();
+
+
 
         }
 

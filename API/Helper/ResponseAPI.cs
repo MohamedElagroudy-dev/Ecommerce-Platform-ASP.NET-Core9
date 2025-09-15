@@ -5,7 +5,7 @@
         public ResponseAPI(int statusCode, string? message = null)
         {
             StatusCode = statusCode;
-            Message = message ?? GetMessageFromStatusCode(StatusCode);
+            Message = message ?? GetMessageFromStatusCode(statusCode);
         }
 
         private static string GetMessageFromStatusCode(int statusCode)
