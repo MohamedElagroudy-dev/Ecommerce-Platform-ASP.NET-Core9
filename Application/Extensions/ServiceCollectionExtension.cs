@@ -1,12 +1,15 @@
 
 
 
+using Application.Account;
 using Application.Account.Services;
 using Application.Cart.Services;
 using Application.Categories.Services;
 using Core.Interfaces;
 using Ecom.Application.Products.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.FileProviders;
 
 
@@ -23,9 +26,8 @@ namespace Application.Extensions
             services.AddScoped<ICartAppService, CartAppService>();
             services.AddScoped<IAccountService, AccountService>();
 
-
-
-
+            services.AddHttpContextAccessor(); // needed for IHttpContextAccessor
+            services.AddScoped<IUserContext, UserContext>();
         }
 
 
