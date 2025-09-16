@@ -1,6 +1,7 @@
 
 
 
+using Application.Account.Services;
 using Application.Cart.Services;
 using Application.Categories.Services;
 using Core.Interfaces;
@@ -20,6 +21,8 @@ namespace Application.Extensions
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ICartAppService, CartAppService>();
+            services.AddScoped<IAccountService, AccountService>();
+
 
 
 
