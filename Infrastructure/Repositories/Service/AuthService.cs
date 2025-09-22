@@ -1,5 +1,9 @@
-﻿using Core.Entities;
+﻿using Application.Account;
+using Azure.Core;
+using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces;
+using Core.Sharing;
 using Core.Sharing.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -19,12 +23,15 @@ namespace Infrastructure.Repositories.Service
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JWT _jwt;
+        private readonly IUserContext _userContext;
 
-        public AuthService(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWT> jwt)
+
+        public AuthService(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWT> jwt, IUserContext userContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _jwt = jwt.Value;
+            _userContext = userContext;
         }
 
         public async Task<AuthModel> RegisterAsync(RegisterModel model)
@@ -55,7 +62,7 @@ namespace Infrastructure.Repositories.Service
                 return new AuthModel { Message = errors };
             }
 
-            await _userManager.AddToRoleAsync(user, "Customer");
+            await _userManager.AddToRoleAsync(user, UserRoles.Customer);
 
             var jwtSecurityToken = await CreateJwtToken(user);
 
@@ -64,7 +71,7 @@ namespace Infrastructure.Repositories.Service
                 Email = user.Email,
                 ExpiresOn = jwtSecurityToken.ValidTo,
                 IsAuthenticated = true,
-                Roles = new List<string> { "Customer" },
+                Roles = new List<string> { $"{UserRoles.Customer}" },
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
                 Username = user.UserName
             };
@@ -97,7 +104,7 @@ namespace Infrastructure.Repositories.Service
 
         public async Task<string> AddRoleAsync(AddRoleModel model)
         {
-            var user = await _userManager.FindByIdAsync(model.UserId);
+            var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (user is null || !await _roleManager.RoleExistsAsync(model.Role))
                 return "Invalid user ID or Role";
@@ -106,6 +113,25 @@ namespace Infrastructure.Repositories.Service
                 return "User already assigned to this role";
 
             var result = await _userManager.AddToRoleAsync(user, model.Role);
+
+            return result.Succeeded ? string.Empty : "Sonething went wrong";
+        }
+        public async Task<string> UnassignUserRole(UnassignRoleModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email)
+            ?? throw new NotFoundException(nameof(AppUser), model.Email);
+
+            var role = await _roleManager.FindByNameAsync(model.Role)
+                ?? throw new NotFoundException(nameof(IdentityRole), model.Role);
+
+            var currentUser = _userContext.GetCurrentUser();
+
+            // Prevent self-admin unassignment
+            if (model.Role == UserRoles.Admin && currentUser?.Email == model.Email)
+            {
+                throw new InvalidOperationException("You cannot remove your own Admin role.");
+            }
+            var result = await _userManager.RemoveFromRoleAsync(user, role.Name!);
 
             return result.Succeeded ? string.Empty : "Sonething went wrong";
         }
@@ -141,5 +167,10 @@ namespace Infrastructure.Repositories.Service
 
             return jwtSecurityToken;
         }
+
+        // TODO: Make CreateOrUpdateAddress
+        // TODO: Make GetAuthState
+        // TODO: Make GetUserInfo
+        // TODO: Make UserClaimsPrincipalFactory add Addresss claim
     }
 }

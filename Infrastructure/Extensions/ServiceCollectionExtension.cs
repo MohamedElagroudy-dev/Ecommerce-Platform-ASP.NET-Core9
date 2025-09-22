@@ -52,6 +52,7 @@ namespace Infrastructure.Extensions
 
                 options.User.RequireUniqueEmail = true;
             })
+            //.AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
             //JWT

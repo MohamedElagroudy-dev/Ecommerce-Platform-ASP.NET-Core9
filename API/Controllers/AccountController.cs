@@ -43,7 +43,18 @@ namespace API.Controllers
             if (!string.IsNullOrEmpty(result))
                 return BadRequest(result);
 
-            return Ok("Role added successfully");
+            return Ok(model);
         }
+
+        [HttpPost("Unassign-role")]
+        public async Task<IActionResult> UnassignRole([FromBody] UnassignRoleModel model)
+        {
+            var result = await _accountAppService.UnassignRoleAsync(model);
+            if (!string.IsNullOrEmpty(result))
+                return BadRequest(result);
+
+            return Ok(model);
+        }
+
     }
 }

@@ -33,13 +33,21 @@ namespace Application.Account.Services
             return await _authService.GetTokenAsync(model);
         }
 
-        public async Task<string> AddRoleAsync(AddRoleModel model)
+        public async Task<string?> AddRoleAsync(AddRoleModel model)
         {
-            if (string.IsNullOrWhiteSpace(model?.UserId))
-                throw new ArgumentException("UserId is required");
+            if (string.IsNullOrWhiteSpace(model?.Email))
+                throw new ArgumentException("Email is required");
 
-            _logger.LogInformation("Adding role '{Role}' to user: {UserId}", model.Role, model.UserId);
+            _logger.LogInformation("Adding role '{Role}' to user: {UserId}", model.Role, model.Email);
             return await _authService.AddRoleAsync(model);
+        }
+        public async Task<string?> UnassignRoleAsync(UnassignRoleModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model?.Email))
+                throw new ArgumentException("Email is required");
+
+            _logger.LogInformation("Unassign role '{Role}' to user: {UserId}", model.Role, model.Email);
+            return await _authService.UnassignUserRole(model);
         }
     }
 }
