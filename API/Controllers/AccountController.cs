@@ -1,4 +1,5 @@
-﻿using Application.Account.Services;
+﻿using Application.Account.DTOs;
+using Application.Account.Services;
 using Core.Sharing.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,26 @@ namespace API.Controllers
                 return BadRequest(result);
 
             return Ok(model);
+        }
+
+        [HttpPost("update-Address")]
+        public async Task<ActionResult<AddressDto>> CreateOrUpdate([FromBody] AddressDto dto)
+        {
+            if (dto == null)
+                return BadRequest("Address data is required");
+
+            var result = await _accountAppService.CreateOrUpdateAddress(dto);
+
+            return Ok(result);
+        }
+
+        [HttpGet("auth-status")]
+        public ActionResult GetAuthState()
+        {
+            return Ok(new
+            {
+                IsAuthenticated = User.Identity?.IsAuthenticated ?? false
+            });
         }
 
     }

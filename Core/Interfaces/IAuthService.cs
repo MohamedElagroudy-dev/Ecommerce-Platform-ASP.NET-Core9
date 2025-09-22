@@ -1,4 +1,5 @@
-﻿using Core.Sharing.Identity;
+﻿using Core.Entities;
+using Core.Sharing.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,6 @@ namespace Core.Interfaces
         Task<AuthModel> GetTokenAsync(TokenRequestModel model);
         Task<string> AddRoleAsync(AddRoleModel model);
         Task<string> UnassignUserRole(UnassignRoleModel model);
+        Task<Address> CreateOrUpdateAddressAsync(string userEmail, Address newAddress);
     }
 }

@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using Restaurants.Infrastructure.Authorization;
 using System.Text;
 
 
@@ -52,7 +53,6 @@ namespace Infrastructure.Extensions
 
                 options.User.RequireUniqueEmail = true;
             })
-            //.AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
             //JWT

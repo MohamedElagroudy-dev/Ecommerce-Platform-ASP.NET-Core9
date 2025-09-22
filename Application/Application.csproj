@@ -25,9 +25,4 @@
     </Reference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Account\DTOs\" />
-    <Folder Include="Account\Mappings\" />
-  </ItemGroup>
-
 </Project>

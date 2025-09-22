@@ -24,25 +24,24 @@ namespace Application.Account
                 return null;
             }
 
-            // match your JWT claim names
             var userId = user.FindFirst("uid")?.Value 
                          ?? throw new InvalidOperationException("User Id not found in token");
 
-            var email = user.FindFirst(JwtRegisteredClaimNames.Email)?.Value 
+            var email = user.FindFirst(JwtRegisteredClaimNames.Email)?.Value
+                        ?? user.FindFirst(ClaimTypes.Email)?.Value
                         ?? throw new InvalidOperationException("Email not found in token");
 
             var roles = user.Claims
                 .Where(c => c.Type == "roles")
                 .Select(c => c.Value);
 
-            // optional custom claims if you add them later
-            var nationality = user.FindFirst("Nationality")?.Value;
-            var dateOfBirthString = user.FindFirst("DateOfBirth")?.Value;
-            var dateOfBirth = dateOfBirthString == null
-                ? (DateOnly?)null
-                : DateOnly.ParseExact(dateOfBirthString, "yyyy-MM-dd");
+            var firstName = user.FindFirst("first_name")?.Value ?? string.Empty;
+            var lastName = user.FindFirst("last_name")?.Value ?? string.Empty;
 
-            return new CurrentUser(userId, email, roles);
+            var username = user.FindFirst(JwtRegisteredClaimNames.Sub)?.Value ?? string.Empty;
+
+
+            return new CurrentUser(userId, email, roles, firstName, lastName);
         }
     }
 }

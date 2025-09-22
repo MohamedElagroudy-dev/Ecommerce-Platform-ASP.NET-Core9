@@ -6,15 +6,19 @@ using Core.Interfaces;
 using Core.Sharing;
 using Core.Sharing.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Extensions;
 
 namespace Infrastructure.Repositories.Service
 {
@@ -140,36 +144,64 @@ namespace Infrastructure.Repositories.Service
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
-            var roleClaims = new List<Claim>();
+            var roleClaims = roles.Select(r => new Claim("roles", r)).ToList();
 
-            foreach (var role in roles)
-                roleClaims.Add(new Claim("roles", role));
+            var claims = new List<Claim>
+                {
+                    new Claim(JwtRegisteredClaimNames.Sub, user.UserName ?? string.Empty),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
+                    new Claim("uid", user.Id)
+                };
 
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("uid", user.Id)
-            }
-            .Union(userClaims)
-            .Union(roleClaims);
+            if (!string.IsNullOrEmpty(user.FirstName))
+                claims.Add(new Claim("first_name", user.FirstName));
 
-            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));
-            var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+            if (!string.IsNullOrEmpty(user.LastName))
+                claims.Add(new Claim("last_name", user.LastName));
 
-            var jwtSecurityToken = new JwtSecurityToken(
+            // Now merge all
+            claims.AddRange(userClaims);
+            claims.AddRange(roleClaims);
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            return new JwtSecurityToken(
                 issuer: _jwt.Issuer,
                 audience: _jwt.Audience,
                 claims: claims,
                 expires: DateTime.Now.AddDays(_jwt.DurationInDays),
-                signingCredentials: signingCredentials);
-
-            return jwtSecurityToken;
+                signingCredentials: creds
+            );
         }
 
-        // TODO: Make CreateOrUpdateAddress
-        // TODO: Make GetAuthState
+
+
+        public async Task<Address> CreateOrUpdateAddressAsync(string userEmail, Address newAddress)
+        {
+            var user = await _userManager.Users
+                .Include(x => x.Address)
+                .FirstOrDefaultAsync(x => x.Email == userEmail);
+
+            if (user == null)
+                throw new AuthenticationException("User not found");
+
+            if (user.Address == null)
+            {
+                user.Address = newAddress;
+            }
+            else
+            {
+                    user.Address.UpdateFrom(newAddress);
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                throw new Exception("Problem updating user address");
+
+            return user.Address!;
+        }
         // TODO: Make GetUserInfo
         // TODO: Make UserClaimsPrincipalFactory add Addresss claim
     }

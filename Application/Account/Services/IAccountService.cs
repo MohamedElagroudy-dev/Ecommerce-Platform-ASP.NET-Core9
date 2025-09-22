@@ -1,4 +1,5 @@
-﻿using Core.Sharing.Identity;
+﻿using Application.Account.DTOs;
+using Core.Sharing.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,6 @@ namespace Application.Account.Services
         Task<AuthModel> GetTokenAsync(TokenRequestModel model);
         Task<string?> AddRoleAsync(AddRoleModel model);
         Task<string?> UnassignRoleAsync(UnassignRoleModel model);
+        Task<AddressDto> CreateOrUpdateAddress(AddressDto dto);
     }
 }

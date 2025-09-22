@@ -1,6 +1,12 @@
-﻿using Core.Interfaces;
+﻿using Application.Account.DTOs;
+using Application.Account.Mappings;
+using Core.Entities;
+using Core.Interfaces;
 using Core.Sharing.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System.Security.Authentication;
 
 namespace Application.Account.Services
 {
@@ -8,11 +14,25 @@ namespace Application.Account.Services
     {
         private readonly IAuthService _authService;
         private readonly ILogger<AccountService> _logger;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly JWT _jwt;
+        private readonly IUserContext _userContext;
 
-        public AccountService(IAuthService authService, ILogger<AccountService> logger)
+
+        
+        public AccountService(IAuthService authService,
+            ILogger<AccountService> logger,
+            UserManager<AppUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            IOptions<JWT> jwt, IUserContext userContext)
         {
             _authService = authService;
             _logger = logger;
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _jwt = jwt.Value;
+            _userContext = userContext;
         }
 
         public async Task<AuthModel> RegisterAsync(RegisterModel model)
@@ -48,6 +68,26 @@ namespace Application.Account.Services
 
             _logger.LogInformation("Unassign role '{Role}' to user: {UserId}", model.Role, model.Email);
             return await _authService.UnassignUserRole(model);
+        }
+        public async Task<AddressDto> CreateOrUpdateAddress(AddressDto dto)
+        {
+            var currentUser = _userContext.GetCurrentUser();
+            if (currentUser == null)
+                throw new UnauthorizedAccessException("User not authenticated");
+
+            _logger.LogInformation("create-or-update Address");
+
+            var entity = dto.ToEntity();
+
+            var updatedEntity = await _authService.CreateOrUpdateAddressAsync(currentUser.Email!, entity);
+
+
+            var UpdatedEntityToReturn = updatedEntity.ToDto();
+
+            if (UpdatedEntityToReturn == null)
+                throw new ArgumentNullException(nameof(UpdatedEntityToReturn));
+
+            return UpdatedEntityToReturn;
         }
     }
 }
