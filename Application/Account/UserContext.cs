@@ -41,7 +41,7 @@ namespace Application.Account
             var username = user.FindFirst(JwtRegisteredClaimNames.Sub)?.Value ?? string.Empty;
 
 
-            return new CurrentUser(userId, email, roles, firstName, lastName);
+            return new CurrentUser(userId, email, roles, firstName, lastName, username);
         }
     }
 }

@@ -202,6 +202,8 @@ namespace Infrastructure.Repositories.Service
 
             return user.Address!;
         }
+
+
         // TODO: Make GetUserInfo
         // TODO: Make UserClaimsPrincipalFactory add Addresss claim
     }
