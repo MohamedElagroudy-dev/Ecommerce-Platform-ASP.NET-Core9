@@ -1,4 +1,5 @@
 ﻿using Application.Account.DTOs;
+using Application.Account.DTOs.Application.Account;
 using Application.Account.Services;
 using Core.Sharing.Identity;
 using Microsoft.AspNetCore.Http;
@@ -76,6 +77,18 @@ namespace API.Controllers
                 IsAuthenticated = User.Identity?.IsAuthenticated ?? false
             });
         }
+
+        [HttpGet("userinfo")]
+        public async Task<ActionResult<UserInfoDto>> GetUserInfo()
+        {
+            var userInfo = await _accountAppService.GetUserInfo();
+
+            if (userInfo == null)
+                return NotFound(new { Message = "User not found" });
+
+            return Ok(userInfo);
+        }
+
 
     }
 }

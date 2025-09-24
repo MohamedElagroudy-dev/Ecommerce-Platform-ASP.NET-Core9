@@ -1,7 +1,9 @@
 ﻿using Application.Account;
 using Azure.Core;
 using Core.Entities;
+using Core.Entities.Product;
 using Core.Exceptions;
+using Core.Extensions;
 using Core.Interfaces;
 using Core.Sharing;
 using Core.Sharing.Identity;
@@ -18,7 +20,6 @@ using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Core.Extensions;
 
 namespace Infrastructure.Repositories.Service
 {
@@ -203,8 +204,20 @@ namespace Infrastructure.Repositories.Service
             return user.Address!;
         }
 
+        public  async Task<(AppUser, IEnumerable<string>)> GetUserByEmailWithAddress(string userEmail)
+        {
+            var user = await _userManager.Users
+                .Include(x => x.Address)
+                .FirstOrDefaultAsync(x => x.Email == userEmail);
+            if (user == null)
+                throw new Exception("Usernot found");
 
-        // TODO: Make GetUserInfo
-        // TODO: Make UserClaimsPrincipalFactory add Addresss claim
+            var roles = await _userManager.GetRolesAsync(user);
+
+            if (user == null) throw new AuthenticationException("User not found");
+
+            return (user,roles);
+        }
+
     }
 }

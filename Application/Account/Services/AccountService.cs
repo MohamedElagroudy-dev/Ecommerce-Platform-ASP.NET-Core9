@@ -1,4 +1,5 @@
 ﻿using Application.Account.DTOs;
+using Application.Account.DTOs.Application.Account;
 using Application.Account.Mappings;
 using Core.Entities;
 using Core.Interfaces;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Security.Authentication;
+using System.Security.Claims;
 
 namespace Application.Account.Services
 {
@@ -89,5 +91,24 @@ namespace Application.Account.Services
 
             return UpdatedEntityToReturn;
         }
+        public async Task<UserInfoDto> GetUserInfo()
+        {
+            _logger.LogInformation("Getting user info");
+            var currentUser = _userContext.GetCurrentUser();
+            if (currentUser == null)
+                throw new UnauthorizedAccessException("User not authenticated");
+
+            var (user, roles) = await _authService.GetUserByEmailWithAddress(currentUser.Email!);
+
+            if (user == null)
+                throw new InvalidOperationException("User not found");
+
+            var userInfo = user.ToDto() ?? new UserInfoDto();
+
+            userInfo.Roles = roles?.ToList() ?? new List<string>();
+
+            return userInfo;
+        }
+
     }
 }
