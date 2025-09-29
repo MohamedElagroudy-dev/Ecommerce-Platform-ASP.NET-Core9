@@ -1,4 +1,6 @@
-﻿using Core.Entities;
+﻿using Application.Payment.DTOs;
+using Application.Payment.Mapping;
+using Core.Entities;
 using Core.Entities.Cart;
 using Core.Entities.Product;
 using Core.Interfaces;
@@ -74,6 +76,12 @@ namespace Application.Payment.Services
         private long CalculateSubtotal(ShoppingCart cart)
         {
             return (long)cart.Items.Sum(x => x.Quantity * x.Price * 100);
+        }
+
+        public async Task<IReadOnlyList<DeliveryMethodDTO>> GetDeliveryMethodsAsync()
+        {
+            var methods = await _unit.DeliveryMethods.GetAllAsync();
+            return methods.ToDtoList();
         }
     }
 }

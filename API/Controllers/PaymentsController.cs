@@ -1,4 +1,5 @@
-﻿using Application.Payment.Services;
+﻿using Application.Payment.DTOs;
+using Application.Payment.Services;
 using Core.Entities;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -30,10 +31,13 @@ namespace API.Controllers
         }
 
         [HttpGet("delivery-methods")]
-        public async Task<ActionResult<IReadOnlyList<DeliveryMethod>>> GetDeliveryMethods()
+        public async Task<ActionResult<IReadOnlyList<DeliveryMethodDTO>>> GetDeliveryMethods()
         {
-            return Ok(await _unit.DeliveryMethods.GetAllAsync());
+            var methods = await _paymentService.GetDeliveryMethodsAsync();
+            return Ok(methods);
         }
+
+        // TODO: Wephook
     }
 
 }
