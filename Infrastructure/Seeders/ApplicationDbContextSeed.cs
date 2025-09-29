@@ -9,22 +9,20 @@ namespace Infrastructure.Seeders
 {
     public class ApplicationDbContextSeed
     {
-        public static async Task SeedAsync(ApplicationDbContext context/*, UserManager<AppUser> userManager*/)
+        public static async Task SeedAsync(ApplicationDbContext context, UserManager<AppUser> userManager)
         {
-            // Example for seeding user
-            //if (!userManager.Users.Any(x => x.UserName == "admin@test.com"))
-            //{
-            //    var user = new AppUser
-            //    {
-            //        UserName = "admin@test.com",
-            //        Email = "admin@test.com"
-            //    };
-            //
-            //    await userManager.CreateAsync(user, "Password@123");
-            //    await userManager.AddToRoleAsync(user, "Admin");
-            //}
+            if (!userManager.Users.Any(x => x.UserName == "admin@test.com"))
+            {
+                var user = new AppUser
+                {
+                    UserName = "admin@test.com",
+                    Email = "admin@test.com"
+                };
 
-            // Seed Products
+                await userManager.CreateAsync(user, "Password@123");
+                await userManager.AddToRoleAsync(user, "Admin");
+            }
+
             if (!context.Products.Any())
             {
                 var productsData = await File.ReadAllTextAsync("../Infrastructure/Seeders/SeedData/products.json");
@@ -37,7 +35,6 @@ namespace Infrastructure.Seeders
                 }
             }
 
-            // Seed DeliveryMethods
             if (!context.DeliveryMethods.Any())
             {
                 var dmData = await File.ReadAllTextAsync("../Infrastructure/Seeders/SeedData/delivery.json");
