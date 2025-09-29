@@ -1,4 +1,5 @@
-﻿using Ecom.Core.Entities.Product;
+﻿using Core.Entities;
+using Ecom.Core.Entities.Product;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace Core.Interfaces
         IProductRepository Products { get; }
         IGenericRepository<Photo> Photos { get; }
         IGenericRepository<Category> Categories { get; }
+        IGenericRepository<DeliveryMethod> DeliveryMethods { get; }
         IImageManagementService Images { get; }
         ICartService Cart { get; }
         Task<int> CompleteAsync();

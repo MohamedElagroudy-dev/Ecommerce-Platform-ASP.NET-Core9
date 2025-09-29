@@ -1,4 +1,5 @@
-﻿using Core.Entities.Product;
+﻿using Core.Entities;
+using Core.Entities.Product;
 using Core.Interfaces;
 using Ecom.Core.Entities.Product;
 using Infrastructure.Persistence;
@@ -11,6 +12,7 @@ namespace Infrastructure.Repositories
         public IProductRepository Products { get; }
         public IGenericRepository<Photo> Photos { get; }
         public IGenericRepository<Category> Categories { get; }
+        public IGenericRepository<DeliveryMethod> DeliveryMethods { get; }
         public IImageManagementService Images { get; }
         public ICartService Cart { get; }
 
@@ -19,6 +21,7 @@ namespace Infrastructure.Repositories
                           IProductRepository productRepository,
                           IGenericRepository<Photo> photoRepository,
                           IGenericRepository<Category> categoryRepository,
+                          IGenericRepository<DeliveryMethod> DeliveryMethodsRepo,
                           IImageManagementService _ImageService,
                                 ICartService _CartService)
         {
@@ -26,6 +29,7 @@ namespace Infrastructure.Repositories
             Products = productRepository;
             Photos = photoRepository;
             Categories = categoryRepository;
+            DeliveryMethods = DeliveryMethodsRepo;
             Images = _ImageService;
             Cart = _CartService;
         }
