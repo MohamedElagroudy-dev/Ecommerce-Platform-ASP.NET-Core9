@@ -5,6 +5,7 @@ using Application.Account;
 using Application.Account.Services;
 using Application.Cart.Services;
 using Application.Categories.Services;
+using Application.Orders.Services;
 using Application.Payment.Services;
 using Core.Interfaces;
 using Ecom.Application.Products.Services;
@@ -27,6 +28,7 @@ namespace Application.Extensions
             services.AddScoped<ICartAppService, CartAppService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IPaymentAppService, PaymentAppService>();
+            services.AddScoped<IOrderService, OrderService>();
 
             services.AddHttpContextAccessor(); // needed for IHttpContextAccessor
             services.AddScoped<IUserContext, UserContext>();
