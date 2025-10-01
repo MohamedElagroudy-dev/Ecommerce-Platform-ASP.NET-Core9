@@ -2,8 +2,12 @@
 using Application.Payment.Mapping;
 using Core.Entities;
 using Core.Entities.Cart;
+using Core.Entities.OrderAggregate;
 using Core.Entities.Product;
 using Core.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Stripe;
 
 namespace Application.Payment.Services
 {
@@ -11,13 +15,15 @@ namespace Application.Payment.Services
     {
         private readonly ICartService _cartService;
         private readonly IUnitOfWork _unit;
-        private readonly IPaymentService _paymentGateway; 
+        private readonly IPaymentService _paymentGateway;
+        private readonly string _whSecret;
 
-        public PaymentAppService(ICartService cartService, IUnitOfWork unit, IPaymentService paymentGateway)
+        public PaymentAppService(ICartService cartService, IUnitOfWork unit, IPaymentService paymentGateway, IConfiguration config)
         {
             _cartService = cartService;
             _unit = unit;
             _paymentGateway = paymentGateway;
+            _whSecret = config["Stripe:WhSecret"] ?? string.Empty;
         }
 
         public async Task<ShoppingCart?> CreateOrUpdatePaymentIntent(string cartId)
@@ -83,5 +89,9 @@ namespace Application.Payment.Services
             var methods = await _unit.DeliveryMethods.GetAllAsync();
             return methods.ToDtoList();
         }
+
+
+        
     }
 }
+

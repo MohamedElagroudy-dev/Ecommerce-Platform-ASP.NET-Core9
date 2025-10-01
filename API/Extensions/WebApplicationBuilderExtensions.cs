@@ -22,6 +22,8 @@ namespace E_commerce.Extensions
 
                 return ConnectionMultiplexer.Connect(config);
             });
+
+            builder.Services.AddSignalR();
         }
     }
 }
