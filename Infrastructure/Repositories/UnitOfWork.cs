@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Entities.OrderAggregate;
 using Core.Entities.Product;
 using Core.Interfaces;
 using Ecom.Core.Entities.Product;
@@ -13,6 +14,10 @@ namespace Infrastructure.Repositories
         public IGenericRepository<Photo> Photos { get; }
         public IGenericRepository<Category> Categories { get; }
         public IGenericRepository<DeliveryMethod> DeliveryMethods { get; }
+
+        public IOrderRepository Orders { get; }
+        public IGenericRepository<OrderItem> OrderItems { get; }
+        
         public IImageManagementService Images { get; }
         public ICartService Cart { get; }
 
@@ -23,13 +28,18 @@ namespace Infrastructure.Repositories
                           IGenericRepository<Category> categoryRepository,
                           IGenericRepository<DeliveryMethod> DeliveryMethodsRepo,
                           IImageManagementService _ImageService,
-                                ICartService _CartService)
+                          ICartService _CartService,
+                          IGenericRepository<OrderItem> orderItemsRepo,
+                          IOrderRepository orderRepository
+                          )
         {
             _context = context;
             Products = productRepository;
             Photos = photoRepository;
             Categories = categoryRepository;
             DeliveryMethods = DeliveryMethodsRepo;
+            Orders = orderRepository;       
+            OrderItems = orderItemsRepo;
             Images = _ImageService;
             Cart = _CartService;
         }

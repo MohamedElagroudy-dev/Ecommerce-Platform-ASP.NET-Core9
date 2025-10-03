@@ -1,5 +1,6 @@
 ﻿using Application.Payment.DTOs;
 using Core.Entities.Cart;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,6 @@ namespace Application.Payment.Services
         Task<ShoppingCart?> CreateOrUpdatePaymentIntent(string cartId);
         Task<string> RefundPayment(string paymentIntentId);
         Task<IReadOnlyList<DeliveryMethodDTO>> GetDeliveryMethodsAsync();
+        
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Entities.OrderAggregate;
 using Ecom.Core.Entities.Product;
 using System;
 using System.Collections.Generic;
@@ -14,8 +15,10 @@ namespace Core.Interfaces
         IGenericRepository<Photo> Photos { get; }
         IGenericRepository<Category> Categories { get; }
         IGenericRepository<DeliveryMethod> DeliveryMethods { get; }
+        IGenericRepository<OrderItem> OrderItems { get; }
         IImageManagementService Images { get; }
         ICartService Cart { get; }
+        IOrderRepository Orders { get; }
         Task<int> CompleteAsync();
     }
 }
