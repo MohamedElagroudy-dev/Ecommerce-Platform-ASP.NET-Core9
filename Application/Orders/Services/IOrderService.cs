@@ -11,6 +11,7 @@ namespace Application.Orders.Services
         Task<PagedResult<OrderDto>> GetAllAsync(OrderParams orderParams);
         Task<OrderDto> CreateOrderAsync(CreateOrderDto orderDto);
         Task<IReadOnlyList<OrderDto>> GetOrdersForUserAsync();
+        Task<OrderDto> GetUserOrderByIdAsync(int orderId);
         Task<OrderDto> GetOrderByIdAsync(int orderId);
     }
 }

@@ -110,7 +110,7 @@ namespace Application.Orders.Services
             return orders.Select(o => o.ToDto()).ToList();
         }
 
-        public async Task<OrderDto> GetOrderByIdAsync(int orderId)
+        public async Task<OrderDto> GetUserOrderByIdAsync(int orderId)
         {
             _logger.LogInformation("Fetching order with id: {OrderId}", orderId);
 
@@ -120,6 +120,25 @@ namespace Application.Orders.Services
 
             var order = await _unitOfWork.Orders.GetByAsync(
                 o => o.Id == orderId && o.BuyerEmail == user.Email,
+                o => o.DeliveryMethod,
+                o => o.OrderItems
+            );
+
+            if (order == null)
+                throw new NotFoundException(nameof(Order), orderId.ToString());
+
+            return order.ToDto();
+        }
+        public async Task<OrderDto> GetOrderByIdAsync(int orderId)
+        {
+            _logger.LogInformation("Fetching order with id: {OrderId}", orderId);
+
+            var user = _userContext.GetCurrentUser();
+            if (user == null)
+                throw new UnauthorizedAccessException("User not authenticated");
+
+            var order = await _unitOfWork.Orders.GetByAsync(
+                o => o.Id == orderId,
                 o => o.DeliveryMethod,
                 o => o.OrderItems
             );

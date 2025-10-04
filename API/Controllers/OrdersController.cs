@@ -72,7 +72,7 @@ namespace API.Controllers
         {
             try
             {
-                var order = await _orderService.GetOrderByIdAsync(id);
+                var order = await _orderService.GetUserOrderByIdAsync(id);
                 return Ok(new ResponseAPI<OrderDto>(200, data: order));
             }
             catch (UnauthorizedAccessException)

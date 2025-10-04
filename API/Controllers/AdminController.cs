@@ -2,9 +2,12 @@
 using Application.Common;
 using Application.Orders.DTOs;
 using Application.Orders.Services;
+using Core.Entities.OrderAggregate;
+using Core.Exceptions;
 using Core.Sharing.Pagination;
 using Core.Sharing.Pagination.Core.Sharing;
 using Ecom.Application.Products.DTOs;
+using Infrastructure.Repositories.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,5 +35,27 @@ namespace API.Controllers
                 return BadRequest(new ResponseAPI<string>(500, ex.Message));
             }
         }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ResponseAPI<OrderDto>>> GetOrderById(int id)
+        {
+            try
+            {
+                var order = await _orderService.GetOrderByIdAsync(id);
+                return Ok(new ResponseAPI<OrderDto>(200, data: order));
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized(new ResponseAPI(401));
+            }
+            catch (NotFoundException)
+            {
+                return NotFound(new ResponseAPI(404, $"Order with ID {id} not found"));
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
     }
 }
