@@ -13,5 +13,6 @@ namespace Application.Orders.Services
         Task<IReadOnlyList<OrderDto>> GetOrdersForUserAsync();
         Task<OrderDto> GetUserOrderByIdAsync(int orderId);
         Task<OrderDto> GetOrderByIdAsync(int orderId);
+        Task<OrderDto> UpdateOrderStatusAsync(int orderId, string newStatus);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Application.Payment.DTOs;
+﻿using Application.Orders.DTOs;
+using Application.Payment.DTOs;
 using Core.Entities.Cart;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -12,7 +13,7 @@ namespace Application.Payment.Services
     public interface IPaymentAppService
     {
         Task<ShoppingCart?> CreateOrUpdatePaymentIntent(string cartId);
-        Task<string> RefundPayment(string paymentIntentId);
+        Task<OrderDto> RefundOrderAsync(int orderId);
         Task<IReadOnlyList<DeliveryMethodDTO>> GetDeliveryMethodsAsync();
         
     }

@@ -1,4 +1,6 @@
-﻿using Application.Payment.DTOs;
+﻿using Application.Orders.DTOs;
+using Application.Orders.Mappings;
+using Application.Payment.DTOs;
 using Application.Payment.Mapping;
 using Core.Entities;
 using Core.Entities.Cart;
@@ -48,10 +50,34 @@ namespace Application.Payment.Services
             return cart;
         }
 
-        public async Task<string> RefundPayment(string paymentIntentId)
+        public async Task<OrderDto> RefundOrderAsync(int orderId)
         {
-            return await _paymentGateway.RefundPayment(paymentIntentId);
+            var order = await _unit.Orders.GetByidAsync(orderId, o => o.OrderItems, o => o.DeliveryMethod);
+
+            if (order == null)
+                throw new KeyNotFoundException($"No order found with ID {orderId}.");
+
+            if (order.Status == OrderStatus.Pending)
+                throw new InvalidOperationException("Cannot refund a pending order (payment not received).");
+
+            if (order.Status == OrderStatus.Refunded)
+                throw new InvalidOperationException("This order has already been refunded.");
+
+            //if ((DateTime.UtcNow - order.OrderDate).TotalDays > 30)
+            //    throw new InvalidOperationException("Refund period has expired (30 days limit).");
+
+            var refundResult = await _paymentGateway.RefundPayment(order.PaymentIntentId);
+
+            if (refundResult != "succeeded")
+                throw new InvalidOperationException("Failed to process refund through payment gateway.");
+
+            order.Status = OrderStatus.Refunded;
+
+            await _unit.CompleteAsync();
+
+            return order.ToDto();
         }
+
 
         // Helpers
         private async Task ValidateCartItemsAsync(ShoppingCart cart)

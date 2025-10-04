@@ -148,5 +148,29 @@ namespace Application.Orders.Services
 
             return order.ToDto();
         }
+        public async Task<OrderDto> UpdateOrderStatusAsync(int orderId, string newStatus)
+        {
+            var order = await _unitOfWork.Orders.GetByidAsync(orderId, o => o.OrderItems, o => o.DeliveryMethod);
+
+            if (order == null)
+                throw new KeyNotFoundException($"No order found with ID {orderId}.");
+
+            if (!Enum.TryParse<OrderStatus>(newStatus, true, out var status))
+                throw new InvalidOperationException($"Invalid order status: {newStatus}");
+
+            // Example logic: Prevent invalid transitions
+            if (order.Status == OrderStatus.Refunded)
+                throw new InvalidOperationException("Cannot change the status of a refunded order.");
+
+            if (order.Status == OrderStatus.Delivered)
+                throw new InvalidOperationException("Delivered orders cannot be changed.");
+
+            order.Status = status;
+
+            await _unitOfWork.CompleteAsync();
+
+            return order.ToDto();
+        }
+
     }
 }
