@@ -1,9 +1,13 @@
 ﻿using Application.Account;
+using Application.Common;
 using Application.Orders.DTOs;
 using Application.Orders.Mappings;
 using Core.Entities.OrderAggregate;
 using Core.Exceptions;
 using Core.Interfaces;
+using Core.Sharing.Pagination;
+using Core.Sharing.Pagination.Core.Sharing;
+using Ecom.Application.Products.DTOs;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Orders.Services
@@ -23,7 +27,15 @@ namespace Application.Orders.Services
             _userContext = userContext;
             _logger = logger;
         }
+        public async Task<PagedResult<OrderDto>> GetAllAsync(OrderParams orderParams)
+        {
+            _logger.LogInformation("Executing GetAllAsync with page {PageNumber}, size {PageSize}", orderParams.PageNumber, orderParams.PageSize);
+            var (orders, totalCount) = await _unitOfWork.Orders.GetAllAsync(orderParams);
 
+            var data = orders.Select(o => o.ToDto()).ToList();
+
+            return new PagedResult<OrderDto>(data, totalCount, orderParams.PageSize, orderParams.PageNumber);
+        }
         public async Task<OrderDto> CreateOrderAsync(CreateOrderDto dto)
         {
             _logger.LogInformation("Creating order for cartId: {CartId}", dto.CartId);

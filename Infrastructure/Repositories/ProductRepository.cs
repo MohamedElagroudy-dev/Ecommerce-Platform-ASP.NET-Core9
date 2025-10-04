@@ -1,6 +1,7 @@
 ﻿using Core.Entities.Product;
 using Core.Interfaces;
 using Core.Sharing;
+using Core.Sharing.Pagination;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -46,14 +47,14 @@ namespace Infrastructure.Repositories
                 ProductSort.PriceDesc => query.OrderByDescending(p => p.Price),
                 ProductSort.NameAsc => query.OrderBy(p => p.Name),
                 ProductSort.NameDesc => query.OrderByDescending(p => p.Name),
-                _ => query.OrderBy(p => p.Id) // default Id
+                _ => query.OrderByDescending(p => p.Id) // default Id
             };
 
 
             // Pagination
             query = query
-                .Skip(productParams.pageSize * (productParams.PageNumber - 1))
-                .Take(productParams.pageSize);
+                .Skip(productParams.PageSize * (productParams.PageNumber - 1))
+                .Take(productParams.PageSize);
 
             var products = await query.ToListAsync();
             return (products, totalCount);

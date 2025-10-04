@@ -2,7 +2,7 @@
 using Core.Entities.Product;
 using Core.Exceptions;
 using Core.Interfaces;
-using Core.Sharing;
+using Core.Sharing.Pagination;
 using Ecom.Application.Products.DTOs;
 using Ecom.Application.Products.Mappings;
 using Ecom.Core.Entities.Product;
@@ -25,12 +25,12 @@ namespace Ecom.Application.Products.Services
 
         public async Task<PagedResult<ProductDTO>> GetAllAsync(ProductParams productParams)
         {
-            _logger.LogInformation("Executing GetAllAsync with page {PageNumber}, size {PageSize}", productParams.PageNumber, productParams.pageSize);
+            _logger.LogInformation("Executing GetAllAsync with page {PageNumber}, size {PageSize}", productParams.PageNumber, productParams.PageSize);
 
             var (products, totalCount) = await _unitOfWork.Products.GetAllAsync(productParams);
             var productsDto = products.Select(p => p.ToDto()).ToList();
 
-            return new PagedResult<ProductDTO>(productsDto, totalCount, productParams.pageSize, productParams.PageNumber);
+            return new PagedResult<ProductDTO>(productsDto, totalCount, productParams.PageSize, productParams.PageNumber);
         }
 
         public async Task<ProductDTO?> AddAsync(AddProductDTO dto)

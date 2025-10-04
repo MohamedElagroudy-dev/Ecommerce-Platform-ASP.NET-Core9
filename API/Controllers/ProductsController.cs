@@ -1,7 +1,7 @@
 ﻿using API.Helper;
 using Application.Common;
 using Core.Exceptions;
-using Core.Sharing;
+using Core.Sharing.Pagination;
 using Ecom.Application.Products.DTOs;
 using Ecom.Application.Products.Services;
 using Microsoft.AspNetCore.Mvc;

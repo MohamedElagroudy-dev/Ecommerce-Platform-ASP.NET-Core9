@@ -1,5 +1,5 @@
 ﻿using Core.Entities.Product;
-using Core.Sharing;
+using Core.Sharing.Pagination;
 using System;
 using System.Collections.Generic;
 using System.Linq;
