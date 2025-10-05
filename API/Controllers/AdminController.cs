@@ -6,10 +6,12 @@ using Application.Payment.Services;
 using Core.Entities.OrderAggregate;
 using Core.Exceptions;
 using Core.Interfaces;
+using Core.Sharing;
 using Core.Sharing.Pagination;
 using Core.Sharing.Pagination.Core.Sharing;
 using Ecom.Application.Products.DTOs;
 using Infrastructure.Repositories.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +19,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = UserRoles.Admin)]
     public class AdminController : ControllerBase
     {
         private readonly IOrderService _orderService;

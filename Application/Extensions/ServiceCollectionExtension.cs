@@ -7,6 +7,7 @@ using Application.Cart.Services;
 using Application.Categories.Services;
 using Application.Orders.Services;
 using Application.Payment.Services;
+using Application.Ratings.Services;
 using Core.Interfaces;
 using Ecom.Application.Products.Services;
 using Microsoft.AspNetCore.Http;
@@ -29,6 +30,7 @@ namespace Application.Extensions
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IPaymentAppService, PaymentAppService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IRatingService, RatingService>();
 
             services.AddHttpContextAccessor(); // needed for IHttpContextAccessor
             services.AddScoped<IUserContext, UserContext>();

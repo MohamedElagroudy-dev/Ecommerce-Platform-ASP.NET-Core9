@@ -1,7 +1,9 @@
 ﻿using Application.Account.DTOs;
 using Application.Account.DTOs.Application.Account;
 using Application.Account.Services;
+using Core.Sharing;
 using Core.Sharing.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,6 +41,7 @@ namespace API.Controllers
         }
 
         [HttpPost("add-role")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> AddRole([FromBody] AddRoleModel model)
         {
             var result = await _accountAppService.AddRoleAsync(model);
@@ -49,6 +52,7 @@ namespace API.Controllers
         }
 
         [HttpPost("Unassign-role")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> UnassignRole([FromBody] UnassignRoleModel model)
         {
             var result = await _accountAppService.UnassignRoleAsync(model);
@@ -59,6 +63,7 @@ namespace API.Controllers
         }
 
         [HttpPost("update-Address")]
+        [Authorize]
         public async Task<ActionResult<AddressDto>> CreateOrUpdate([FromBody] AddressDto dto)
         {
             if (dto == null)
@@ -77,7 +82,7 @@ namespace API.Controllers
                 IsAuthenticated = User.Identity?.IsAuthenticated ?? false
             });
         }
-
+        [Authorize]
         [HttpGet("userinfo")]
         public async Task<ActionResult<UserInfoDto>> GetUserInfo()
         {

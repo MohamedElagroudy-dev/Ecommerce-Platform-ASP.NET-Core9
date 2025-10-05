@@ -4,6 +4,7 @@ using Application.Payment.Services;
 using Core.Entities;
 using Core.Entities.OrderAggregate;
 using Core.Interfaces;
+using Core.Sharing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +31,8 @@ namespace API.Controllers
             _hubContext = hubContext;
         }
 
-        [Authorize]
+      
+        [Authorize(Roles = UserRoles.Customer)]
         [HttpPost("{cartId}")]
         public async Task<ActionResult> CreateOrUpdatePaymentIntent(string cartId)
         {
@@ -40,6 +42,7 @@ namespace API.Controllers
         }
 
         [HttpGet("delivery-methods")]
+        [Authorize]
         public async Task<ActionResult<IReadOnlyList<DeliveryMethodDTO>>> GetDeliveryMethods()
         {
             var methods = await _paymentService.GetDeliveryMethodsAsync();

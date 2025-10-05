@@ -2,6 +2,7 @@
 using Application.Orders.DTOs;
 using Application.Orders.Services;
 using Core.Exceptions;
+using Core.Sharing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +25,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = UserRoles.Customer)]
         public async Task<ActionResult<ResponseAPI<OrderDto>>> CreateOrder(CreateOrderDto orderDto)
         {
             try
@@ -43,7 +45,7 @@ namespace API.Controllers
             {
                 return BadRequest(new ResponseAPI(400, ex.Message));
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 throw;
             }
@@ -61,7 +63,7 @@ namespace API.Controllers
             {
                 return Unauthorized(new ResponseAPI(401));
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 throw; //exception middleware handle it
             }
@@ -83,7 +85,7 @@ namespace API.Controllers
             {
                 return NotFound(new ResponseAPI(404, $"Order with ID {id} not found"));
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 throw;
             }

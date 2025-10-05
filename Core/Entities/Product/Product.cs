@@ -19,5 +19,7 @@ namespace Core.Entities.Product
         [ForeignKey(nameof(CategoryId))]
         public virtual Category Category { get; set; } = null!;
 
+        public double rating { get; set; }
+
     }
 }

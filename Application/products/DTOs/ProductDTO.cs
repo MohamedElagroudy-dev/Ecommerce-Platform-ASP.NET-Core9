@@ -10,5 +10,7 @@
         public int QuantityInStock { get; set; }
         public string CategoryName { get; init; } = string.Empty;
         public List<PhotoDTO> Photos { get; init; } = new();
+
+        public Double? rating { get; init; }
     }
 }

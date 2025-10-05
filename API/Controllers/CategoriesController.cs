@@ -1,6 +1,8 @@
-﻿using Application.Categories.DTOs;
+﻿using API.Helper;
+using Application.Categories.DTOs;
 using Application.Categories.Services;
-using API.Helper;
+using Core.Sharing;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -53,6 +55,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Add(AddCategoryDTO dto)
         {
             try
@@ -71,6 +74,7 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Update(int id, UpdateCategoryDTO dto)
         {
             try
@@ -92,6 +96,7 @@ namespace API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             try
