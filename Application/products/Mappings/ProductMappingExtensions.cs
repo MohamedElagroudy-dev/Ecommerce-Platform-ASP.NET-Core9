@@ -16,7 +16,8 @@ namespace Ecom.Application.Products.Mappings
                 Price = product.Price,
                 QuantityInStock = product.QuantityInStock,
                 CategoryName = product.Category?.Name ?? string.Empty,
-                Photos = product.Photos?.Select(p => p.ToDto()).ToList() ?? new()
+                Photos = product.Photos?.Select(p => p.ToDto()).ToList() ?? new(),
+                rating = product.rating
             };
         }
 

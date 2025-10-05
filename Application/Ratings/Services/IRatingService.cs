@@ -11,5 +11,6 @@ namespace Application.Ratings.Services
     {
         Task<bool> AddRatingAsync(RatingDto ratingDto);
         Task<IReadOnlyList<ReturnRatingDto>> GetRatingsForProductAsync(int productId);
+        Task DeleteAsync(int id);
     }
 }

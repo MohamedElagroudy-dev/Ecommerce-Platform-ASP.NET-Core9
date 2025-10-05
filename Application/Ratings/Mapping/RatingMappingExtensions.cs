@@ -11,6 +11,7 @@ namespace Application.Ratings.Mappings
         {
             return new ReturnRatingDto
             {
+                Id = rating.Id,
                 Stars = rating.Stars,
                 Content = rating.Content,
                 UserName = rating.AppUser?.UserName ?? "Unknown",
