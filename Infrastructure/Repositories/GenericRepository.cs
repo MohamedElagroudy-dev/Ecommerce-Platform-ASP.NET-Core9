@@ -58,6 +58,19 @@ namespace Infrastructure.Repositories
             return await query.ToListAsync();
         }
 
+        public async Task<IReadOnlyList<T>> GetAllAsync(
+            Expression<Func<T, bool>> predicate,
+            params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            foreach (var include in includes)
+                query = query.Include(include);
+
+            return await query.Where(predicate).AsNoTracking().ToListAsync();
+        }
+
+
         public async Task<T> GetAsync(int id)
          => await _context.Set<T>().FindAsync(id);
 

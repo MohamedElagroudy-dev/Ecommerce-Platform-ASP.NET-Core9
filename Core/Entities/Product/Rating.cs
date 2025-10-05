@@ -14,7 +14,7 @@ namespace Core.Entities.Product
         [Range(1, 5)]
         public int Stars { get; set; }
 
-        public string? Content { get; set; }
+        public string Content { get; set; } = string.Empty;
         public DateTime Review { get; set; } = DateTime.Now;
 
         public string? AppUserId { get; set; }

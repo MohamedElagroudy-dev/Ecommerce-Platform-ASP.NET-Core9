@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Rating.DTOs
+namespace Application.Ratings.DTOs
 {
-    public class RatingDto
+    public class ReturnRatingDto
     {
-        public int ProductId { get; set; }
         public int Stars { get; set; }
         public string Content { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
+        public DateTime ReviewTime { get; set; }
     }
 }

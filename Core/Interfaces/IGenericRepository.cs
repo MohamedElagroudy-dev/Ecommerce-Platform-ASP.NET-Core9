@@ -15,6 +15,9 @@ namespace Core.Interfaces
         IEnumerable<T> GetAll();
 
         Task<IEnumerable<T>> GetAllAsync(params Expression<Func<T, object>>[] includes);
+        Task<IReadOnlyList<T>> GetAllAsync(
+            Expression<Func<T, bool>> predicate,
+            params Expression<Func<T, object>>[] includes);
 
         Task<T> GetByidAsync(int id, params Expression<Func<T, object>>[] includes);
         Task<T?> GetByAsync(

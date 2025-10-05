@@ -21,12 +21,15 @@ namespace Infrastructure.Repositories
         public IImageManagementService Images { get; }
         public ICartService Cart { get; }
 
+        public IGenericRepository<Rating> Ratings { get; }
+
 
         public UnitOfWork(ApplicationDbContext context,
                           IProductRepository productRepository,
                           IGenericRepository<Photo> photoRepository,
                           IGenericRepository<Category> categoryRepository,
                           IGenericRepository<DeliveryMethod> DeliveryMethodsRepo,
+                          IGenericRepository<Rating> RatingRepo,
                           IImageManagementService _ImageService,
                           ICartService _CartService,
                           IGenericRepository<OrderItem> orderItemsRepo,
@@ -42,6 +45,7 @@ namespace Infrastructure.Repositories
             OrderItems = orderItemsRepo;
             Images = _ImageService;
             Cart = _CartService;
+            Ratings = RatingRepo;
         }
 
         public async Task<int> CompleteAsync()
