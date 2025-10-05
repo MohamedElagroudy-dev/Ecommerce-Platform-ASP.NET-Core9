@@ -1,9 +1,11 @@
 ﻿using API.Helper;
 using Application.Common;
 using Core.Exceptions;
+using Core.Sharing;
 using Core.Sharing.Pagination;
 using Ecom.Application.Products.DTOs;
 using Ecom.Application.Products.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecom.API.Controllers
@@ -50,8 +52,8 @@ namespace Ecom.API.Controllers
                 return BadRequest(new ResponseAPI<string>(500, ex.Message));
             }
         }
-
         [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Add([FromForm] AddProductDTO dto)
         {
             try
@@ -74,6 +76,7 @@ namespace Ecom.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Update(int id, [FromForm] UpdateProductDTO dto)
         {
             try
@@ -103,6 +106,7 @@ namespace Ecom.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             try

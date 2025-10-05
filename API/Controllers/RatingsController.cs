@@ -1,6 +1,8 @@
 ﻿using API.Helper;
 using Application.Ratings.DTOs;
 using Application.Ratings.Services;
+using Core.Sharing;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -17,6 +19,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = UserRoles.Customer)]
         public async Task<ActionResult<ResponseAPI>> AddRating(RatingDto dto)
         {
             try
@@ -51,6 +54,7 @@ namespace API.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = $"{UserRoles.Customer},{UserRoles.Admin}")]
         public async Task<ActionResult<ResponseAPI>> DeleteRating(int id)
         {
             try
