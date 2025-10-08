@@ -23,12 +23,10 @@ namespace Infrastructure.Repositories
         public async Task AddAsync(T Entity)
         {
             await _context.Set<T>().AddAsync(Entity);
-            await _context.SaveChangesAsync();
         }
         public async Task AddRangeAsync(IEnumerable<T> entities)
         {
             await _context.Set<T>().AddRangeAsync(entities);
-            await _context.SaveChangesAsync();
         }
 
 
@@ -37,7 +35,6 @@ namespace Infrastructure.Repositories
         {
             var entity = await _context.Set<T>().FindAsync(id);
             _context.Set<T>().Remove(entity);
-            await _context.SaveChangesAsync();
         }
 
         public IEnumerable<T> GetAll()
@@ -111,7 +108,6 @@ namespace Infrastructure.Repositories
             if (ex_entity != null)
             {
                 _context.Update(ex_entity);
-                await _context.SaveChangesAsync();
             }
         }
 
