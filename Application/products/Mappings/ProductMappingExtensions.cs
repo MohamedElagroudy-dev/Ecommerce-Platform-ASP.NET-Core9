@@ -6,8 +6,22 @@ namespace Ecom.Application.Products.Mappings
 {
     public static class ProductMappingExtensions
     {
+        private const string DefaultImagePath = "/Images/Defult/42463.jpg";
+
         public static ProductDTO ToDto(this Product product)
         {
+            var photos = product.Photos?.Select(p => p.ToDto()).ToList() ?? new List<PhotoDTO>();
+
+            // If there are no photos, add a default one
+            if (photos.Count == 0)
+            {
+                photos.Add(new PhotoDTO
+                {
+                    ImageName = DefaultImagePath,
+                    ProductId = product.Id
+                });
+            }
+
             return new ProductDTO
             {
                 Id = product.Id,
@@ -16,7 +30,7 @@ namespace Ecom.Application.Products.Mappings
                 Price = product.Price,
                 QuantityInStock = product.QuantityInStock,
                 CategoryName = product.Category?.Name ?? string.Empty,
-                Photos = product.Photos?.Select(p => p.ToDto()).ToList() ?? new(),
+                Photos = photos,
                 rating = product.rating
             };
         }
