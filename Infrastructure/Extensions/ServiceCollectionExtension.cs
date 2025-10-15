@@ -3,7 +3,6 @@
 
 using Core.Entities;
 using Core.Interfaces;
-using Core.Sharing.Identity;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.Service;
@@ -16,6 +15,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Restaurants.Infrastructure.Authorization;
 using System.Text;
+using Infrastructure.Settings;
 
 
 namespace Infrastructure.Extensions

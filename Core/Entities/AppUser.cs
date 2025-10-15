@@ -14,5 +14,7 @@ namespace Core.Entities
         public string? LastName { get; set; }
 
         public Address? Address { get; set; }
+
+        public List<RefreshToken>? RefreshTokens { get; set; }
     }
 }

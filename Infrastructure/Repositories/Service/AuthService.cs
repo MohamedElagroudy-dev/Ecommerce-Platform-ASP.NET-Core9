@@ -8,7 +8,6 @@ using Core.Interfaces;
 using Core.Sharing;
 using Core.Sharing.Identity;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -20,6 +19,7 @@ using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Infrastructure.Settings;
 
 namespace Infrastructure.Repositories.Service
 {
@@ -204,7 +204,7 @@ namespace Infrastructure.Repositories.Service
             return user.Address!;
         }
 
-        public  async Task<(AppUser, IEnumerable<string>)> GetUserByEmailWithAddress(string userEmail)
+        public async Task<(AppUser, IEnumerable<string>)> GetUserByEmailWithAddress(string userEmail)
         {
             var user = await _userManager.Users
                 .Include(x => x.Address)

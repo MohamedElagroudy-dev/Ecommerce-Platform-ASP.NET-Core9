@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Sharing.Identity
+namespace Infrastructure.Settings
 {
     public class JWT
     {
