@@ -8,11 +8,11 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Repositories.Service
+namespace Infrastructure.Service
 {
     public class CartService(IConnectionMultiplexer redis) : ICartService
     {
-        private readonly StackExchange.Redis.IDatabase _database = redis.GetDatabase();
+        private readonly IDatabase _database = redis.GetDatabase();
         public async Task<bool> DeleteCartAsync(string key)
         {
             return await _database.KeyDeleteAsync(key);

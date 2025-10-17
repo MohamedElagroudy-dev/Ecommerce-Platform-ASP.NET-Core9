@@ -21,7 +21,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Repositories.Service
+namespace Infrastructure.Service
 {
     public class AuthService : IAuthService
     {

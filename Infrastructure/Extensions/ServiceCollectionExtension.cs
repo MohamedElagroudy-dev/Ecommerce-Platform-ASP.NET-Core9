@@ -6,7 +6,7 @@ using Core.Interfaces;
 using Core.Sharing.Identity;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
-using Infrastructure.Repositories.Service;
+using Infrastructure.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
