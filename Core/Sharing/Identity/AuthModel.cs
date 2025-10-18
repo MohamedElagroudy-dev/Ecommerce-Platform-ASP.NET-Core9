@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Core.Sharing.Identity
 {
@@ -11,6 +12,11 @@ namespace Core.Sharing.Identity
         public string Email { get; set; } = string.Empty;
         public List<string> Roles { get; set; } = new List<string>();
         public string Token { get; set; } = string.Empty;
-        public DateTime ExpiresOn { get; set; }
+        //public DateTime ExpiresOn { get; set; }
+
+        //[JsonIgnore]
+        public string? RefreshToken { get; set; }
+        public DateTime RefreshTokenExpiration { get; set; }
+
     }
 }

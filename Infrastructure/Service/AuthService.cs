@@ -7,8 +7,8 @@ using Core.Extensions;
 using Core.Interfaces;
 using Core.Sharing;
 using Core.Sharing.Identity;
+using Infrastructure.Settings;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -18,10 +18,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Authentication;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Repositories.Service
+namespace Infrastructure.Service
 {
     public class AuthService : IAuthService
     {
@@ -29,7 +30,6 @@ namespace Infrastructure.Repositories.Service
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JWT _jwt;
         private readonly IUserContext _userContext;
-
 
         public AuthService(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IOptions<JWT> jwt, IUserContext userContext)
         {
@@ -71,14 +71,19 @@ namespace Infrastructure.Repositories.Service
 
             var jwtSecurityToken = await CreateJwtToken(user);
 
+            var refreshToken = GenerateRefreshToken();
+            user.RefreshTokens?.Add(refreshToken);
+            await _userManager.UpdateAsync(user);
+
             return new AuthModel
             {
                 Email = user.Email,
-                ExpiresOn = jwtSecurityToken.ValidTo,
                 IsAuthenticated = true,
-                Roles = new List<string> { $"{UserRoles.Customer}" },
+                Roles = new List<string> { UserRoles.Customer },
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
-                Username = user.UserName
+                Username = user.UserName,
+                RefreshToken = refreshToken.Token,
+                RefreshTokenExpiration = refreshToken.ExpiresOn
             };
         }
 
@@ -101,8 +106,25 @@ namespace Infrastructure.Repositories.Service
             authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             authModel.Email = user.Email;
             authModel.Username = user.UserName;
-            authModel.ExpiresOn = jwtSecurityToken.ValidTo;
             authModel.Roles = rolesList.ToList();
+
+            if (user.RefreshTokens != null && user.RefreshTokens.Any(t => t.IsActive))
+            {
+                var activeRefreshToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
+                if (activeRefreshToken != null)
+                {
+                    authModel.RefreshToken = activeRefreshToken.Token;
+                    authModel.RefreshTokenExpiration = activeRefreshToken.ExpiresOn;
+                }
+            }
+            else
+            {
+                var refreshToken = GenerateRefreshToken();
+                authModel.RefreshToken = refreshToken.Token;
+                authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
+                user.RefreshTokens.Add(refreshToken);
+                await _userManager.UpdateAsync(user);
+            }
 
             return authModel;
         }
@@ -119,12 +141,13 @@ namespace Infrastructure.Repositories.Service
 
             var result = await _userManager.AddToRoleAsync(user, model.Role);
 
-            return result.Succeeded ? string.Empty : "Sonething went wrong";
+            return result.Succeeded ? string.Empty : "Something went wrong";
         }
+
         public async Task<string> UnassignUserRole(UnassignRoleModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email)
-            ?? throw new NotFoundException(nameof(AppUser), model.Email);
+                ?? throw new NotFoundException(nameof(AppUser), model.Email);
 
             var role = await _roleManager.FindByNameAsync(model.Role)
                 ?? throw new NotFoundException(nameof(IdentityRole), model.Role);
@@ -136,9 +159,10 @@ namespace Infrastructure.Repositories.Service
             {
                 throw new InvalidOperationException("You cannot remove your own Admin role.");
             }
+
             var result = await _userManager.RemoveFromRoleAsync(user, role.Name!);
 
-            return result.Succeeded ? string.Empty : "Sonething went wrong";
+            return result.Succeeded ? string.Empty : "Something went wrong";
         }
 
         private async Task<JwtSecurityToken> CreateJwtToken(AppUser user)
@@ -172,12 +196,10 @@ namespace Infrastructure.Repositories.Service
                 issuer: _jwt.Issuer,
                 audience: _jwt.Audience,
                 claims: claims,
-                expires: DateTime.Now.AddDays(_jwt.DurationInDays),
+                expires: DateTime.Now.AddMinutes(_jwt.DurationInMinutes),
                 signingCredentials: creds
             );
         }
-
-
 
         public async Task<Address> CreateOrUpdateAddressAsync(string userEmail, Address newAddress)
         {
@@ -194,7 +216,7 @@ namespace Infrastructure.Repositories.Service
             }
             else
             {
-                    user.Address.UpdateFrom(newAddress);
+                user.Address.UpdateFrom(newAddress);
             }
 
             var result = await _userManager.UpdateAsync(user);
@@ -204,13 +226,13 @@ namespace Infrastructure.Repositories.Service
             return user.Address!;
         }
 
-        public  async Task<(AppUser, IEnumerable<string>)> GetUserByEmailWithAddress(string userEmail)
+        public async Task<(AppUser, IEnumerable<string>)> GetUserByEmailWithAddress(string userEmail)
         {
             var user = await _userManager.Users
                 .Include(x => x.Address)
                 .FirstOrDefaultAsync(x => x.Email == userEmail);
             if (user == null)
-                throw new Exception("Usernot found");
+                throw new Exception("User not found");
 
             var roles = await _userManager.GetRolesAsync(user);
 
@@ -219,5 +241,78 @@ namespace Infrastructure.Repositories.Service
             return (user,roles);
         }
 
+        private RefreshToken GenerateRefreshToken()
+        {
+            byte[] randomNumber = new byte[32];
+            RandomNumberGenerator.Fill(randomNumber);
+
+            return new RefreshToken
+            {
+                Token = Convert.ToBase64String(randomNumber),
+                ExpiresOn = DateTime.UtcNow.AddDays(10),
+                CreatedOn = DateTime.UtcNow
+            };
+        }
+
+
+        public async Task<AuthModel> RefreshTokenAsync(string token)
+        {
+            var authModel = new AuthModel();
+
+            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+
+            if (user == null)
+            {
+                authModel.Message = "Invalid token";
+                return authModel;
+            }
+
+            // Fix: Ensure RefreshTokens is not null before calling .Single(...)
+            var refreshTokens = user.RefreshTokens ?? new List<RefreshToken>();
+            var refreshToken = refreshTokens.Single(t => t.Token == token);
+
+            if (!refreshToken.IsActive)
+            {
+                authModel.Message = "Inactive token";
+                return authModel;
+            }
+
+            refreshToken.RevokedOn = DateTime.UtcNow;
+
+            var newRefreshToken = GenerateRefreshToken();
+            user.RefreshTokens!.Add(newRefreshToken);
+            await _userManager.UpdateAsync(user);
+
+            var jwtToken = await CreateJwtToken(user);
+            authModel.IsAuthenticated = true;
+            authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+            authModel.Email = user.Email;
+            authModel.Username = user.UserName;
+            var roles = await _userManager.GetRolesAsync(user);
+            authModel.Roles = roles.ToList();
+            authModel.RefreshToken = newRefreshToken.Token;
+            authModel.RefreshTokenExpiration = newRefreshToken.ExpiresOn;
+
+            return authModel;
+        }
+
+        public async Task<bool> RevokeTokenAsync(string token)
+        {
+            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+
+            if (user == null)
+                return false;
+
+            var refreshToken = user.RefreshTokens.Single(t => t.Token == token);
+
+            if (!refreshToken.IsActive)
+                return false;
+
+            refreshToken.RevokedOn = DateTime.UtcNow;
+
+            await _userManager.UpdateAsync(user);
+
+            return true;
+        }
     }
 }

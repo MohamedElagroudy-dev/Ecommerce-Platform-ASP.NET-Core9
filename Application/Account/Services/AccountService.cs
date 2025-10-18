@@ -18,7 +18,6 @@ namespace Application.Account.Services
         private readonly ILogger<AccountService> _logger;
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly JWT _jwt;
         private readonly IUserContext _userContext;
 
 
@@ -27,13 +26,12 @@ namespace Application.Account.Services
             ILogger<AccountService> logger,
             UserManager<AppUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            IOptions<JWT> jwt, IUserContext userContext)
+            IUserContext userContext)
         {
             _authService = authService;
             _logger = logger;
             _userManager = userManager;
             _roleManager = roleManager;
-            _jwt = jwt.Value;
             _userContext = userContext;
         }
 
@@ -71,6 +69,26 @@ namespace Application.Account.Services
             _logger.LogInformation("Unassign role '{Role}' to user: {UserId}", model.Role, model.Email);
             return await _authService.UnassignUserRole(model);
         }
+        public async Task<AuthModel?> RefreshToken(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                throw new ArgumentException("Token is required");
+
+            _logger.LogInformation("Refreshing token for user: {UserId}", _userContext.GetCurrentUser()?.Email);
+            return await _authService.RefreshTokenAsync(token);
+        }
+        public async Task<bool> RevokeToken(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                throw new ArgumentException("Token is required");
+
+            _logger.LogInformation("Revoke Token for user: {UserId}", _userContext.GetCurrentUser()?.Email);
+            return await _authService.RevokeTokenAsync(token);
+        }
+
+
+
+
         public async Task<AddressDto> CreateOrUpdateAddress(AddressDto dto)
         {
             var currentUser = _userContext.GetCurrentUser();
