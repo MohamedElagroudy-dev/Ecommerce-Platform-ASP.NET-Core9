@@ -11,7 +11,7 @@ Originally developed as part of a full-stack .NET + Angular course, this reposit
 * **Entity Framework Core** with Code-First Migrations
 * **Repository Pattern & Unit of Work**
 * **Clean Architecture** design for scalability and maintainability
-* **Authentication & Authorization** using **JWT** and **ASP.NET Identity**
+* **Authentication & Authorization using JWT, Refresh Tokens, and ASP.NET Identity**
 * **Role-based Authorization (Admin, Customer)**
 * **Shopping Cart** stored in **Redis**
 * **Order Management**
