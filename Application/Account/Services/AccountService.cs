@@ -69,6 +69,26 @@ namespace Application.Account.Services
             _logger.LogInformation("Unassign role '{Role}' to user: {UserId}", model.Role, model.Email);
             return await _authService.UnassignUserRole(model);
         }
+        public async Task<AuthModel?> RefreshToken(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                throw new ArgumentException("Token is required");
+
+            _logger.LogInformation("Refreshing token for user: {UserId}", _userContext.GetCurrentUser()?.Email);
+            return await _authService.RefreshTokenAsync(token);
+        }
+        public async Task<bool> RevokeToken(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                throw new ArgumentException("Token is required");
+
+            _logger.LogInformation("Revoke Token for user: {UserId}", _userContext.GetCurrentUser()?.Email);
+            return await _authService.RevokeTokenAsync(token);
+        }
+
+
+
+
         public async Task<AddressDto> CreateOrUpdateAddress(AddressDto dto)
         {
             var currentUser = _userContext.GetCurrentUser();

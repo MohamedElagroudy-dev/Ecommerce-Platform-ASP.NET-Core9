@@ -16,5 +16,9 @@ namespace Core.Interfaces
         Task<string> UnassignUserRole(UnassignRoleModel model);
         Task<Address> CreateOrUpdateAddressAsync(string userEmail, Address newAddress);
         Task<(AppUser, IEnumerable<string>)> GetUserByEmailWithAddress(string userEmail);
+        Task<AuthModel> RefreshTokenAsync(string token);
+        Task<bool> RevokeTokenAsync(string token);
+
+
     }
 }

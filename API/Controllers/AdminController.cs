@@ -10,7 +10,6 @@ using Core.Sharing;
 using Core.Sharing.Pagination;
 using Core.Sharing.Pagination.Core.Sharing;
 using Ecom.Application.Products.DTOs;
-using Infrastructure.Repositories.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

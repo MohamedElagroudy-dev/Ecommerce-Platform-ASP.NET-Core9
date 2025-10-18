@@ -17,5 +17,8 @@ namespace Application.Account.Services
         Task<string?> UnassignRoleAsync(UnassignRoleModel model);
         Task<AddressDto> CreateOrUpdateAddress(AddressDto dto);
         Task<UserInfoDto> GetUserInfo();
+
+        Task<AuthModel?> RefreshToken(string token);
+        Task<bool> RevokeToken(string token);
     }
 }

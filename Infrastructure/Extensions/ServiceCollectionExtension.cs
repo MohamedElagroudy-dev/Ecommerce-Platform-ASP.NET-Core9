@@ -5,7 +5,6 @@ using Core.Entities;
 using Core.Interfaces;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
-using Infrastructure.Repositories.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Restaurants.Infrastructure.Authorization;
 using System.Text;
 using Infrastructure.Settings;
+using Infrastructure.Service;
 
 
 namespace Infrastructure.Extensions
@@ -79,7 +79,8 @@ namespace Infrastructure.Extensions
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["JWT:Issuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                    ClockSkew = TimeSpan.Zero
                 };
             });
             }
