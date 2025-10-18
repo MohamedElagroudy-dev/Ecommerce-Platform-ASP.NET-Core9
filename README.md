@@ -61,7 +61,7 @@ src/
    ```
 
 3. **Update connection strings**
-   Edit `appsettings.Development.json` with your **SQL Server** and **Redis** configurations.
+   Edit `appsettings.Template.json` with your **SQL Server** and **Redis** configurations.
 
 4. **Run migrations**
 
